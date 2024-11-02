@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
@@ -9,7 +11,7 @@ use App\Services\Jwt\Interfaces\JwtProvider;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
 
-final class SignUpController extends Controller
+class SignUpController extends Controller
 {
     public function __construct(
         private readonly ResponseFactory $response,

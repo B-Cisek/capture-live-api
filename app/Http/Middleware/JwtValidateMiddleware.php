@@ -2,6 +2,10 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
+use App\Services\Jwt\Exception\TokenBlacklistedException;
+use App\Services\Jwt\Exception\TokenInvalidException;
+use App\Services\Jwt\Exception\TokenMissingException;
 use App\Services\Jwt\Interfaces\JwtBlacklist;
 use App\Services\Jwt\Interfaces\JwtProvider;
 use Closure;
@@ -21,18 +25,24 @@ class JwtValidateMiddleware
         $token = $request->bearerToken();
 
         if (! $token) {
-            return response()->json(['message' => 'Token missing.'], 401);
+            throw new TokenMissingException();
         }
 
         try {
             $tokenObject = $this->jwtProvider->parse($token);
-            $request->request->set('userId', $tokenObject->claims()->get(RegisteredClaims::SUBJECT));
+            $user = (new User)->newQuery()->find($tokenObject->claims()->get(RegisteredClaims::SUBJECT));
+
+            if (is_null($user)) {
+                throw new TokenInvalidException();
+            }
+
+            $request->setUserResolver(fn () => $user);
         } catch (\Exception) {
-            return response()->json(['message' => 'Token invalid.'], 401);
+            throw new TokenInvalidException();
         }
 
         if ($this->jwtBlacklist->isBlacklisted($token)) {
-            return response()->json(['message' => 'Token blacklisted.'], 401);
+           throw new TokenBlacklistedException();
         }
 
         return $next($request);

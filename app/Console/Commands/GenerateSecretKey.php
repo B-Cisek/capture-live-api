@@ -7,23 +7,9 @@ use Random\Randomizer;
 
 class GenerateSecretKey extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
     protected $signature = 'jwt:generate-secret-key';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
     protected $description = 'Generate secret key';
 
-    /**
-     * Execute the console command.
-     */
     public function handle(): void
     {
         $bytes = (new Randomizer())->getBytes(32);

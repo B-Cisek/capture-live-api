@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repositories\BlackListedToken;
 
 use App\Models\BlackListedToken;
@@ -17,16 +19,22 @@ class BlackListedTokenRepository implements BlackListedTokenRepositoryInterface
 
     public function deleteExpiredTokens(): void
     {
-        BlackListedToken::where('expired_at', '<=', now())->delete();
+        BlackListedToken::query()
+            ->where('expired_at', '<=', now())
+            ->delete();
     }
 
     public function isBlacklisted(string $tokenId): bool
     {
-        return BlackListedToken::where('token_id', $tokenId)->exists();
+        return BlackListedToken::query()
+            ->where('token_id', $tokenId)
+            ->exists();
     }
 
     public function removeToken(string $tokenId): bool
     {
-        return (bool) BlackListedToken::where('token_id', $tokenId)->delete();
+        return (bool) BlackListedToken::query()
+            ->where('token_id', $tokenId)
+            ->delete();
     }
 }

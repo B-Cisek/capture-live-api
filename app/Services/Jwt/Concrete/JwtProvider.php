@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services\Jwt\Concrete;
 
 use App\Services\Jwt\Interfaces\JwtProvider as JwtProviderContract;
@@ -23,7 +25,7 @@ final readonly class JwtProvider implements JwtProviderContract
             ->issuedBy(Config::get('app.url'))
             ->identifiedBy(Uuid::uuid4()->toString())
             ->relatedTo($userId)
-            ->expiresAt($now->modify('+2 weeks'));
+            ->expiresAt($now->modify('+'. Config::get('jwt.exp') .' days'));
 
         foreach ($claims as $key => $value) {
             $builder = $builder->withClaim($key, $value);

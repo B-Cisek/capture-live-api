@@ -6,5 +6,5 @@ use Exception;
 
 class EmailAlreadyExistsException extends Exception
 {
-    //
+    protected $message = 'Email already exists in the system';
 }

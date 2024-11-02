@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
@@ -8,7 +10,6 @@ use App\Services\AuthService\Interfaces\AuthService;
 use App\Services\Jwt\Interfaces\JwtProvider;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
-use Ramsey\Uuid\Uuid;
 
 class SignInController extends Controller
 {
@@ -20,12 +21,6 @@ class SignInController extends Controller
 
     public function __invoke(SignInRequest $request): JsonResponse
     {
-        $token = $this->jwtProvider->issue(Uuid::uuid4()->toString(), [
-            'email' => $request->email,
-            'foo' => 'bar',
-        ], ['test' => 'test']);
-
-        return $this->response->json(['token' => $token]);
         try {
             $userModel = $this->auth->signin($request);
             $token = $this->jwtProvider->issue($userModel->id, [

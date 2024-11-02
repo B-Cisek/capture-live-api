@@ -1,14 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services\Jwt\Concrete;
 
 use App\Repositories\BlackListedToken\BlackListedTokenRepositoryInterface;
 use App\Services\Jwt\Interfaces\JwtBlacklist;
 use App\Services\Jwt\Interfaces\JwtProvider;
-use Lcobucci\JWT\Token\RegisteredClaims;
 use DateTimeInterface;
+use Lcobucci\JWT\Token\RegisteredClaims;
 
-readonly final class JwtBlacklistService implements JwtBlacklist
+final readonly class JwtBlacklistService implements JwtBlacklist
 {
     public function __construct(
         private JwtProvider $jwtProvider,
