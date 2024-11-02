@@ -12,7 +12,7 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class SettingController extends Controller
+final class SettingController extends Controller
 {
     public function __construct(
         private readonly ResponseFactory $response,
@@ -36,7 +36,7 @@ class SettingController extends Controller
                 Setting::query()->updateOrCreate([
                     'name' => $setting['name'],
                     'user_id' => $request->user()->id,
-                    'value' => $setting['value']
+                    'value' => $setting['value'],
                 ]);
             }
         }

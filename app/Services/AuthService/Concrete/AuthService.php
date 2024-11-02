@@ -19,8 +19,8 @@ final readonly class AuthService implements AuthServiceInterface
 {
     public function __construct(
         private UserRepositoryInterface $userRepository,
-        private Hasher $hasher
-    ){}
+        private Hasher $hasher,
+    ) {}
 
     public function signup(SignUpRequest $request): User
     {

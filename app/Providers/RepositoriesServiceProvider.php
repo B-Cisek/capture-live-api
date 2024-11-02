@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Providers;
 
 use App\Repositories\BlackListedToken\BlackListedTokenRepository;
@@ -10,7 +12,7 @@ use App\Repositories\User\UserRepository;
 use App\Repositories\User\UserRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 
-class RepositoriesServiceProvider extends ServiceProvider
+final class RepositoriesServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
@@ -19,7 +21,5 @@ class RepositoriesServiceProvider extends ServiceProvider
         $this->app->bind(StreamRepositoryInterface::class, StreamRepository::class);
     }
 
-    public function boot(): void
-    {
-    }
+    public function boot(): void {}
 }

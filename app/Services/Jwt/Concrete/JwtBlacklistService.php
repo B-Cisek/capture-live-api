@@ -14,8 +14,8 @@ final readonly class JwtBlacklistService implements JwtBlacklist
 {
     public function __construct(
         private JwtProvider $jwtProvider,
-        private BlackListedTokenRepositoryInterface $repository
-    ){}
+        private BlackListedTokenRepositoryInterface $repository,
+    ) {}
 
     public function blacklist(string $token): void
     {

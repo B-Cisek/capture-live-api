@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands;
 
 use App\Repositories\BlackListedToken\BlackListedTokenRepositoryInterface;
 use Illuminate\Console\Command;
 
-class RemoveExpiredTokens extends Command
+final class RemoveExpiredTokens extends Command
 {
     protected $signature = 'app:remove-expired-tokens';
     protected $description = 'Command description';

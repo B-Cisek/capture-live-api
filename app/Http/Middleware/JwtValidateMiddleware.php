@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Middleware;
 
 use App\Models\User;
@@ -9,16 +11,17 @@ use App\Services\Jwt\Exception\TokenMissingException;
 use App\Services\Jwt\Interfaces\JwtBlacklist;
 use App\Services\Jwt\Interfaces\JwtProvider;
 use Closure;
+use Exception;
 use Illuminate\Http\Request;
 use Lcobucci\JWT\Token\RegisteredClaims;
 use Symfony\Component\HttpFoundation\Response;
 
-class JwtValidateMiddleware
+final class JwtValidateMiddleware
 {
     public function __construct(
         private readonly JwtProvider $jwtProvider,
-        private readonly JwtBlacklist $jwtBlacklist
-    ){}
+        private readonly JwtBlacklist $jwtBlacklist,
+    ) {}
 
     public function handle(Request $request, Closure $next): Response
     {
@@ -30,19 +33,19 @@ class JwtValidateMiddleware
 
         try {
             $tokenObject = $this->jwtProvider->parse($token);
-            $user = (new User)->newQuery()->find($tokenObject->claims()->get(RegisteredClaims::SUBJECT));
+            $user = (new User())->newQuery()->find($tokenObject->claims()->get(RegisteredClaims::SUBJECT));
 
-            if (is_null($user)) {
+            if (null === $user) {
                 throw new TokenInvalidException();
             }
 
-            $request->setUserResolver(fn () => $user);
-        } catch (\Exception) {
+            $request->setUserResolver(fn() => $user);
+        } catch (Exception) {
             throw new TokenInvalidException();
         }
 
         if ($this->jwtBlacklist->isBlacklisted($token)) {
-           throw new TokenBlacklistedException();
+            throw new TokenBlacklistedException();
         }
 
         return $next($request);

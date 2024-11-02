@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Providers;
 
 use App\Services\AuthService\Concrete\AuthService;
@@ -17,7 +19,7 @@ use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Signer\Key\InMemory;
 
-class AppServiceProvider extends ServiceProvider
+final class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
@@ -29,7 +31,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(JwtProviderContract::class, function () {
             $configuration = Configuration::forSymmetricSigner(
                 new Signer\Hmac\Sha512(),
-                InMemory::base64Encoded(Config::get('jwt.secret'))
+                InMemory::base64Encoded(Config::get('jwt.secret')),
             );
 
             $configuration->setValidationConstraints();

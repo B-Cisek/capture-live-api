@@ -7,7 +7,7 @@ namespace App\Repositories\Stream;
 use App\Models\Stream;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
-class StreamRepository implements StreamRepositoryInterface
+final class StreamRepository implements StreamRepositoryInterface
 {
     public function getByUserPaginate(string $userId, int $pages = 10): LengthAwarePaginator
     {

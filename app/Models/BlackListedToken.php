@@ -1,18 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
+use DateTimeImmutable;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * @property string $token_id
- * @property \DateTimeImmutable $expired_at
+ * @property DateTimeImmutable $expired_at
  */
-class BlackListedToken extends Model
+final class BlackListedToken extends Model
 {
     public $timestamps = false;
-    protected $primaryKey = null;
     public $incrementing = false;
+    protected $primaryKey = null;
 
     protected $fillable = [
         'token_id',

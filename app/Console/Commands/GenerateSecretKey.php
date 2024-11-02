@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Random\Randomizer;
 
-class GenerateSecretKey extends Command
+final class GenerateSecretKey extends Command
 {
     protected $signature = 'jwt:generate-secret-key';
     protected $description = 'Generate secret key';

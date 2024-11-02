@@ -5,16 +5,17 @@ declare(strict_types=1);
 namespace App\Services\Cache\Adapter;
 
 use App\Services\Cache\Interfaces\Cache;
+use DateInterval;
 use Illuminate\Support\Facades\Redis;
 
-class RedisCache implements Cache
+final class RedisCache implements Cache
 {
     public function get(string $key, mixed $default = null): mixed
     {
         return Redis::get($key, $default);
     }
 
-    public function set(string $key, mixed $value, \DateInterval|int|null $ttl = null): bool
+    public function set(string $key, mixed $value, DateInterval|int|null $ttl = null): bool
     {
         return Redis::set($key, $value, $ttl);
     }
@@ -34,7 +35,7 @@ class RedisCache implements Cache
         return Redis::getMultiple($keys, $default);
     }
 
-    public function setMultiple(iterable $values, \DateInterval|int|null $ttl = null): bool
+    public function setMultiple(iterable $values, DateInterval|int|null $ttl = null): bool
     {
         return Redis::setMultiple($values, $ttl);
     }

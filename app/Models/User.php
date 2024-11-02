@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -14,10 +16,12 @@ use Illuminate\Notifications\Notifiable;
  * @property string $email
  * @property string $password
  */
-class User extends Authenticatable
+final class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasUuids;
+    use HasFactory;
+    use HasUuids;
+    use Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -33,6 +37,16 @@ class User extends Authenticatable
         'password',
     ];
 
+    public function streams(): HasMany
+    {
+        return $this->hasMany(Stream::class);
+    }
+
+    public function settings(): HasMany
+    {
+        return $this->hasMany(Setting::class);
+    }
+
     /**
      * Get the attributes that should be cast.
      *
@@ -44,15 +58,5 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
-    }
-
-    public function streams(): HasMany
-    {
-        return $this->hasMany(Stream::class);
-    }
-
-    public function settings(): HasMany
-    {
-        return $this->hasMany(Setting::class);
     }
 }

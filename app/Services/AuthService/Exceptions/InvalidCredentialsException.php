@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services\AuthService\Exceptions;
 
-class InvalidCredentialsException extends \Exception
+use Exception;
+
+final class InvalidCredentialsException extends Exception
 {
     protected $message = 'Invalid credentials';
 }

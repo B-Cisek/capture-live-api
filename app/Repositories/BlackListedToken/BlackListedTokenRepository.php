@@ -7,7 +7,7 @@ namespace App\Repositories\BlackListedToken;
 use App\Models\BlackListedToken;
 use DateTimeInterface;
 
-class BlackListedTokenRepository implements BlackListedTokenRepositoryInterface
+final class BlackListedTokenRepository implements BlackListedTokenRepositoryInterface
 {
     public function blacklistToken(string $tokenId, DateTimeInterface $expiredAt): void
     {

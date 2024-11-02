@@ -1,13 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Exceptions;
 
 use Exception;
 
-class ApiException extends Exception
+final class ApiException extends Exception
 {
-    public function report(): void
-    {
-
-    }
+    public function report(): void {}
 }

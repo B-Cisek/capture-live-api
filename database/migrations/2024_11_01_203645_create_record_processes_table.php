@@ -1,16 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Enums\ProcessStatus;
 use App\Models\Stream;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     public function up(): void
     {
-        Schema::create('record_processes', function (Blueprint $table) {
+        Schema::create('record_processes', function (Blueprint $table): void {
             $table->uuid('id')->primary();
             $table->foreignIdFor(Stream::class);
             $table->integer('process_id');

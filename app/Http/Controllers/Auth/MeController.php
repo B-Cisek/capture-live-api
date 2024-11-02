@@ -11,7 +11,7 @@ use App\Models\User;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
 
-class MeController extends Controller
+final class MeController extends Controller
 {
     public function __construct(
         private readonly ResponseFactory $response,

@@ -1,19 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Jwt;
 
 use App\Services\Jwt\Concrete\JwtProvider;
 use App\Services\Jwt\Interfaces\JwtProvider as JwtProviderContract;
+use DateTimeImmutable;
 use Illuminate\Support\Facades\Config;
 use Lcobucci\JWT\Configuration;
+use Lcobucci\JWT\Token;
 use Lcobucci\JWT\Token\RegisteredClaims;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
 use Ramsey\Uuid\Uuid;
 use Random\Randomizer;
-use Lcobucci\JWT\Token;
+use Tests\TestCase;
 
-class JwtProviderTest extends TestCase
+final class JwtProviderTest extends TestCase
 {
     private JwtProviderContract $jwtProvider;
     private string $userId;
@@ -34,7 +37,7 @@ class JwtProviderTest extends TestCase
 
         $configuration = Configuration::forSymmetricSigner(
             new \Lcobucci\JWT\Signer\Hmac\Sha512(),
-            \Lcobucci\JWT\Signer\Key\InMemory::base64Encoded(Config::get('jwt.secret'))
+            \Lcobucci\JWT\Signer\Key\InMemory::base64Encoded(Config::get('jwt.secret')),
         );
 
         $this->jwtProvider = new JwtProvider($configuration);
@@ -68,8 +71,8 @@ class JwtProviderTest extends TestCase
         $this->assertEquals($this->claims['email'], $parsedToken->claims()->get('email'));
         $this->assertEquals(Config::get('app.url'), $parsedToken->claims()->get(RegisteredClaims::ISSUER));
         $this->assertEquals(
-            (new \DateTimeImmutable())->modify('+5 days')->format('Y-m-d'),
-            $parsedToken->claims()->get(RegisteredClaims::EXPIRATION_TIME)->format('Y-m-d')
+            (new DateTimeImmutable())->modify('+5 days')->format('Y-m-d'),
+            $parsedToken->claims()->get(RegisteredClaims::EXPIRATION_TIME)->format('Y-m-d'),
         );
         $this->assertEquals($this->headers['foo'], $parsedToken->headers()->get('foo'));
     }
@@ -82,6 +85,6 @@ class JwtProviderTest extends TestCase
         $token = $this->jwtProvider->issue($this->userId, $this->claims, $this->headers);
         $parsedToken = $this->jwtProvider->parse($token);
 
-        $this->assertTrue($parsedToken->isExpired(new \DateTimeImmutable()));
+        $this->assertTrue($parsedToken->isExpired(new DateTimeImmutable()));
     }
 }

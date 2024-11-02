@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services\Jwt\Exception;
 
+use Exception;
 use Symfony\Component\HttpFoundation\Response;
 
-class TokenMissingException extends \Exception
+final class TokenMissingException extends Exception
 {
     protected $message = 'Token is missing';
     protected $code = Response::HTTP_BAD_REQUEST;

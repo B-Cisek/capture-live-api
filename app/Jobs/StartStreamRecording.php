@@ -1,18 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Jobs;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class StartStreamRecording implements ShouldQueue
+final class StartStreamRecording implements ShouldQueue
 {
-    use Dispatchable, SerializesModels;
+    use Dispatchable;
+    use SerializesModels;
 
-    public function __construct(private string $username)
-    {
-    }
+    public function __construct(private string $username) {}
 
     public function __serialize(): array
     {

@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repositories\User;
 
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UserRepository implements UserRepositoryInterface
+final class UserRepository implements UserRepositoryInterface
 {
     public function existsByEmail(string $email): bool
     {

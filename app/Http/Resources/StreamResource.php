@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class StreamResource extends JsonResource
+final class StreamResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
@@ -16,7 +18,7 @@ class StreamResource extends JsonResource
             'startAt' => $this->start_at,
             'endAt' => $this->end_at,
             'isActive' => $this->is_active,
-            'status' => $this->status
+            'status' => $this->status,
         ];
     }
 }

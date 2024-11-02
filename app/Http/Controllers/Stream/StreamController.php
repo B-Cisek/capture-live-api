@@ -18,7 +18,7 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 
-class StreamController extends Controller
+final class StreamController extends Controller
 {
     public function __construct(
         private readonly ResponseFactory $response,

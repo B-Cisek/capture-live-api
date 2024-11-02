@@ -10,7 +10,7 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class LogoutController extends Controller
+final class LogoutController extends Controller
 {
     public function __construct(
         private readonly JwtBlacklist $jwtBlacklist,
