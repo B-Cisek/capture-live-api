@@ -7,8 +7,8 @@ namespace App\Services\Jwt\Exception;
 use App\Exceptions\ApiException;
 use Symfony\Component\HttpFoundation\Response;
 
-final class TokenBlacklistedException extends ApiException
+final class TokenExpiredException extends ApiException
 {
-    protected $message = 'Token is blacklisted';
+    protected $message = 'Token has expired';
     protected $code = Response::HTTP_UNAUTHORIZED;
 }

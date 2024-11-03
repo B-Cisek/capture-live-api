@@ -2,13 +2,12 @@
 
 declare(strict_types=1);
 
+use App\Exceptions\ApiExceptionHandler;
 use App\Http\Middleware\EnsureJsonResponse;
 use App\Http\Middleware\JwtValidateMiddleware;
-use App\Services\Jwt\Exception\TokenMissingException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Illuminate\Http\Request;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -22,27 +21,5 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->api(EnsureJsonResponse::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        $exceptions->render(function (Exception $exception, Request $request) {
-
-            if ($exception instanceof TokenMissingException) {
-                return response()->json(
-                    data: ['message' => $exception->getMessage()],
-                    status: $exception->getCode(),
-                );
-            }
-
-            if ($exception instanceof App\Services\Jwt\Exception\TokenInvalidException) {
-                return response()->json(
-                    data: ['message' => $exception->getMessage()],
-                    status: $exception->getCode(),
-                );
-            }
-
-            if ($exception instanceof App\Services\Jwt\Exception\TokenBlacklistedException) {
-                return response()->json(
-                    data: ['message' => $exception->getMessage()],
-                    status: $exception->getCode(),
-                );
-            }
-        });
+        $exceptions->render(fn(Throwable $e) => app(ApiExceptionHandler::class)->render($e));
     })->create();
