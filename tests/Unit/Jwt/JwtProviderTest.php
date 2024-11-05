@@ -32,7 +32,7 @@ final class JwtProviderTest extends TestCase
         $this->headers = ['foo' => 'bar'];
 
         Config::set('app.url', 'http://localhost');
-        Config::set('jwt.exp', 5);
+        Config::set('jwt.exp', 'P5D');
         Config::set('jwt.secret', base64_encode(bin2hex((new Randomizer())->getBytes(32))));
 
         $configuration = Configuration::forSymmetricSigner(
@@ -80,7 +80,7 @@ final class JwtProviderTest extends TestCase
     #[Test]
     public function it_should_fail_with_expired_token(): void
     {
-        Config::set('jwt.exp', 0);
+        Config::set('jwt.exp', 'P0M');
 
         $token = $this->jwtProvider->issue($this->userId, $this->claims, $this->headers);
         $parsedToken = $this->jwtProvider->parse($token);

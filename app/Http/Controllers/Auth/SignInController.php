@@ -22,17 +22,13 @@ final class SignInController extends Controller
 
     public function __invoke(SignInRequest $request): JsonResponse
     {
-        try {
-            $userModel = $this->auth->signin($request);
-            $token = $this->jwtProvider->issue($userModel->id, [
-                'id' => $userModel->id,
-                'email' => $userModel->email,
-            ]);
-            return $this->response->json(['token' => $token]);
-        } catch (Exception $e) {
-            return $this->response->json([
-                'error' => $e->getMessage(),
-            ]);
-        }
+
+        $userModel = $this->auth->signin($request);
+        $token = $this->jwtProvider->issue($userModel->id, [
+            'id' => $userModel->id,
+            'email' => $userModel->email,
+        ]);
+
+        return $this->response->json(['token' => $token]);
     }
 }

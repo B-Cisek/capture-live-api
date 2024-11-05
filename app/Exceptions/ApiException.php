@@ -7,20 +7,15 @@ namespace App\Exceptions;
 use Exception;
 use Illuminate\Http\JsonResponse;
 
-abstract class ApiException extends Exception
+class ApiException extends Exception
 {
-    protected int $statusCode = JsonResponse::HTTP_INTERNAL_SERVER_ERROR;
-
-    public function getStatusCode(): int
-    {
-        return $this->statusCode;
-    }
+    protected $message = 'An Error Occurred';
+    protected $code = JsonResponse::HTTP_INTERNAL_SERVER_ERROR;
 
     public function render(): JsonResponse
     {
         return new JsonResponse([
-            'message' => $this->getMessage(),
-            'code' => $this->getCode(),
-        ], $this->getStatusCode());
+            'error' => $this->getMessage()
+        ], $this->getCode());
     }
 }

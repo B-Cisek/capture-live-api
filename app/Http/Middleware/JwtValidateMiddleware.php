@@ -13,8 +13,10 @@ use App\Services\Jwt\Interfaces\JwtBlacklist;
 use App\Services\Jwt\Interfaces\JwtProvider;
 use Closure;
 use DateTimeImmutable;
+use DateTimeZone;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 use Lcobucci\JWT\Token\RegisteredClaims;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -39,7 +41,6 @@ final class JwtValidateMiddleware
         } catch (Exception) {
             throw new TokenInvalidException();
         }
-
 
         if ($tokenObject->isExpired(new DateTimeImmutable())) {
             throw new TokenExpiredException();

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Jwt\Concrete;
 
 use App\Services\Jwt\Interfaces\JwtProvider as JwtProviderContract;
+use DateInterval;
 use DateTimeImmutable;
 use Illuminate\Support\Facades\Config;
 use Lcobucci\JWT\Configuration;
@@ -26,7 +27,7 @@ final readonly class JwtProvider implements JwtProviderContract
             ->issuedBy(Config::get('app.url'))
             ->identifiedBy(Uuid::uuid4()->toString())
             ->relatedTo($userId)
-            ->expiresAt($now->modify('+' . Config::get('jwt.exp') . ' days'));
+            ->expiresAt($now->add(new DateInterval(Config::get('jwt.exp', 'P14D'))));
 
         foreach ($claims as $key => $value) {
             $builder = $builder->withClaim($key, $value);
