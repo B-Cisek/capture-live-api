@@ -5,7 +5,7 @@ FROM base AS development
 # Switch to root so we can do root things
 USER root
 
-RUN install-php-extensions intl openssl sodium pdo_pgsql redis pcntl opcache
+RUN install-php-extensions intl pdo_pgsql redis opcache
 # Save the build arguments as a variable
 ARG USER_ID
 ARG GROUP_ID

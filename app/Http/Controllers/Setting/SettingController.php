@@ -11,6 +11,7 @@ use App\Models\Setting;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 final class SettingController extends Controller
 {
@@ -27,21 +28,25 @@ final class SettingController extends Controller
         return $this->response->json($settings);
     }
 
-    public function store(StoreSettingsRequest $request): JsonResponse
+    public function store(StoreSettingsRequest $request): Response
     {
         $settings = $request->validated();
 
         foreach ($settings as $setting) {
             if ($this->isSettingExist($setting['name'])) {
-                Setting::query()->updateOrCreate([
-                    'name' => $setting['name'],
-                    'user_id' => $request->user()->id,
-                    'value' => $setting['value'],
-                ]);
+                Setting::query()->updateOrInsert(
+                    [
+                        'name' => $setting['name'],
+                        'user_id' => $request->user()->id,
+                    ],
+                    [
+                        'value' => $setting['value']
+                    ]
+                );
             }
         }
 
-        return $this->response->json(status: JsonResponse::HTTP_CREATED);
+        return $this->response->noContent();
     }
 
     private function isSettingExist(string $key): bool

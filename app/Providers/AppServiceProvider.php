@@ -12,6 +12,10 @@ use App\Services\Jwt\Concrete\JwtBlacklistService;
 use App\Services\Jwt\Concrete\JwtProvider;
 use App\Services\Jwt\Interfaces\JwtBlacklist;
 use App\Services\Jwt\Interfaces\JwtProvider as JwtProviderContract;
+use App\Services\PubSub\Adapter\RedisPubSubService;
+use App\Services\PubSub\Interfaces\PubSubInterface;
+use App\Services\Queue\Adapter\RedisQueueService;
+use App\Services\Queue\Interfaces\QueueInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
@@ -21,6 +25,12 @@ use Lcobucci\JWT\Signer\Key\InMemory;
 
 final class AppServiceProvider extends ServiceProvider
 {
+    public $bindings = [
+        AuthServiceContract::class => AuthService::class,
+        Cache::class => RedisCache::class,
+        JwtBlacklist::class => JwtBlacklistService::class,
+    ];
+
     public function register(): void
     {
         if ($this->app->environment('local')) {
@@ -39,9 +49,13 @@ final class AppServiceProvider extends ServiceProvider
             return new JwtProvider($configuration);
         });
 
-        $this->app->bind(AuthServiceContract::class, AuthService::class);
-        $this->app->bind(Cache::class, RedisCache::class);
-        $this->app->bind(JwtBlacklist::class, JwtBlacklistService::class);
+        $this->app->bind(PubSubInterface::class, function () {
+            $redis = new \Redis();
+            $config = Config::get('database.redis.default');
+            $redis->connect($config['host'], (int) $config['port']);
+
+            return new RedisPubSubService($redis);
+        });
     }
 
     public function boot(): void

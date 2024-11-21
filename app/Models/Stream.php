@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property DateTimeImmutable $end_at
  * @property RecordingStatus $status
  * @property string $user_id
+ * @property boolean $is_active
  */
 final class Stream extends Model
 {
@@ -72,5 +73,10 @@ final class Stream extends Model
             'status' => RecordingStatus::class,
             'platform' => Platform::class,
         ];
+    }
+
+    public function getUserSettings()
+    {
+        return $this->user->settings;
     }
 }

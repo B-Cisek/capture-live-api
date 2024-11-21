@@ -15,7 +15,8 @@ class ApiException extends Exception
     public function render(): JsonResponse
     {
         return new JsonResponse([
-            'error' => $this->getMessage()
+            'error' => true,
+            'message' => $this->getMessage()
         ], $this->getCode());
     }
 }

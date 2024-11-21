@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Stream;
 
+use App\Enums\RecordingStatus;
 use App\Helpers\CurrentUser;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreStreamRequest;
@@ -16,6 +17,7 @@ use App\Repositories\Stream\StreamRepositoryInterface;
 use Illuminate\Contracts\Auth\Access\Gate;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 final class StreamController extends Controller
@@ -37,6 +39,7 @@ final class StreamController extends Controller
     {
         $attributes = $request->validated();
         $attributes['user_id'] = $request->user()->id;
+        $attributes['status'] = RecordingStatus::READY;
 
         $stream = new Stream($attributes);
         $stream->save();
@@ -55,9 +58,7 @@ final class StreamController extends Controller
     {
         $this->gate->authorize(__FUNCTION__, [$stream, $request->user()->id]);
 
-        $stream
-            ->fill($request->validated())
-            ->update();
+        $stream->update($request->validated());
 
         return $this->response->json(StreamResource::make($stream));
     }
@@ -67,6 +68,17 @@ final class StreamController extends Controller
         $this->gate->authorize(__FUNCTION__, [$stream, $user->id]);
 
         $stream->delete();
+
+        return $this->response->noContent();
+    }
+
+    public function batchDestroy(Request $request): Response
+    {
+        $userId = $request->user()->id;
+        $ids = $request->input('ids');
+        $ids = explode(',', $ids);
+
+        Stream::query()->where('user_id', $userId)->whereIn('id', $ids)->delete();
 
         return $this->response->noContent();
     }

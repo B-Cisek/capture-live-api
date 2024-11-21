@@ -20,19 +20,23 @@ final class ApiExceptionHandler
 
         if ($exception instanceof ValidationException) {
             return new JsonResponse([
+                'error' => true,
+                'message' => 'Validation Error',
                 'errors' => $exception->errors(),
             ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         if ($exception instanceof HttpExceptionInterface) {
             return new JsonResponse([
-                'error' => $exception->getMessage(),
+                'error' => true,
+                'message' => $exception->getMessage(),
             ], $exception->getStatusCode());
         }
 
         if (! Config::get('app.debug')) {
             return new JsonResponse([
-                'error' => 'A Error Occurred',
+                'error' => true,
+                'message' => 'A Error Occurred'
             ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
 

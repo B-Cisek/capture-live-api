@@ -18,4 +18,9 @@ final class StreamPolicy
     {
         return $userId === $stream->user_id;
     }
+
+    public function destroy(?User $user, Stream $stream, ?string $userId): bool
+    {
+        return $userId === $stream->user_id;
+    }
 }

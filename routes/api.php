@@ -18,5 +18,6 @@ Route::middleware('jwt')->group(function (): void {
     Route::get('/me', MeController::class);
     Route::get('/settings', [SettingController::class, 'index']);
     Route::post('/settings', [SettingController::class, 'store']);
+    Route::delete('/streams/batch', [StreamController::class, 'batchDestroy']);
     Route::apiResource('/streams', StreamController::class);
 });
