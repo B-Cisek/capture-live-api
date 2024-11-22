@@ -14,14 +14,13 @@ use App\Services\Jwt\Interfaces\JwtBlacklist;
 use App\Services\Jwt\Interfaces\JwtProvider as JwtProviderContract;
 use App\Services\PubSub\Adapter\RedisPubSubService;
 use App\Services\PubSub\Interfaces\PubSubInterface;
-use App\Services\Queue\Adapter\RedisQueueService;
-use App\Services\Queue\Interfaces\QueueInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Signer\Key\InMemory;
+use Redis;
 
 final class AppServiceProvider extends ServiceProvider
 {
@@ -50,7 +49,7 @@ final class AppServiceProvider extends ServiceProvider
         });
 
         $this->app->bind(PubSubInterface::class, function () {
-            $redis = new \Redis();
+            $redis = new Redis();
             $config = Config::get('database.redis.default');
             $redis->connect($config['host'], (int) $config['port']);
 

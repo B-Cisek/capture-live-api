@@ -62,6 +62,11 @@ final class Stream extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function getUserSettings()
+    {
+        return $this->user->settings;
+    }
+
     protected function casts(): array
     {
         return [
@@ -73,10 +78,5 @@ final class Stream extends Model
             'status' => RecordingStatus::class,
             'platform' => Platform::class,
         ];
-    }
-
-    public function getUserSettings()
-    {
-        return $this->user->settings;
     }
 }

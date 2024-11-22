@@ -7,7 +7,7 @@ namespace App\Services\AuthService\Exceptions;
 use App\Exceptions\ApiException;
 use Symfony\Component\HttpFoundation\Response;
 
-class InvalidCredentialsException extends ApiException
+final class InvalidCredentialsException extends ApiException
 {
     protected $message = 'Invalid credentials';
     protected $code = Response::HTTP_UNAUTHORIZED;

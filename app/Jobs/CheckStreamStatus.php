@@ -10,19 +10,17 @@ use App\Services\Api\Twitch\TwitchApi;
 use App\Services\PubSub\Interfaces\PubSubInterface;
 use Illuminate\Support\Carbon;
 
-class CheckStreamStatus
+final class CheckStreamStatus
 {
     private Stream $stream;
 
-    public function __construct(private readonly PubSubInterface $pubSub)
-    {
-    }
+    public function __construct(private readonly PubSubInterface $pubSub) {}
 
     public function __invoke(): void
     {
         $streams = Stream::query()->with('user.settings')->get();
 
-        $streams->each(function (Stream $stream) {
+        $streams->each(function (Stream $stream): void {
             $this->stream = $stream;
 
             if ($this->isReadyToRecord()) {
@@ -47,7 +45,7 @@ class CheckStreamStatus
 
     private function isStatusReady(): bool
     {
-        return $this->stream->status === RecordingStatus::READY;
+        return RecordingStatus::READY === $this->stream->status;
     }
 
     private function isUserLive(): bool
@@ -60,7 +58,7 @@ class CheckStreamStatus
         $startAt = $this->stream->start_at;
         $endAt = $this->stream->end_at;
 
-        if (is_null($startAt) && is_null($endAt)) {
+        if (null === $startAt && null === $endAt) {
             return true;
         }
 

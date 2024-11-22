@@ -8,7 +8,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SignInRequest;
 use App\Services\AuthService\Interfaces\AuthService;
 use App\Services\Jwt\Interfaces\JwtProvider;
-use Exception;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
 

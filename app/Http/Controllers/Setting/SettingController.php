@@ -40,8 +40,8 @@ final class SettingController extends Controller
                         'user_id' => $request->user()->id,
                     ],
                     [
-                        'value' => $setting['value']
-                    ]
+                        'value' => $setting['value'],
+                    ],
                 );
             }
         }

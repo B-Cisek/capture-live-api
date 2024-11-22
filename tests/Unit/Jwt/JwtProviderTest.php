@@ -70,10 +70,10 @@ final class JwtProviderTest extends TestCase
         $this->assertEquals($this->userId, $parsedToken->claims()->get(RegisteredClaims::SUBJECT));
         $this->assertEquals($this->claims['email'], $parsedToken->claims()->get('email'));
         $this->assertEquals(Config::get('app.url'), $parsedToken->claims()->get(RegisteredClaims::ISSUER));
-//        $this->assertEquals(
-//            (new DateTimeImmutable())->add(new \DateInterval('P5D'))->format('Y-m-d'),
-//            $parsedToken->claims()->get(RegisteredClaims::EXPIRATION_TIME)->format('Y-m-d'),
-//        );
+        //        $this->assertEquals(
+        //            (new DateTimeImmutable())->add(new \DateInterval('P5D'))->format('Y-m-d'),
+        //            $parsedToken->claims()->get(RegisteredClaims::EXPIRATION_TIME)->format('Y-m-d'),
+        //        );
         $this->assertEquals($this->headers['foo'], $parsedToken->headers()->get('foo'));
     }
 

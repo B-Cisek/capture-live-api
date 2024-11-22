@@ -11,8 +11,5 @@ final class EventsHandle extends Command
     protected $signature = 'event:handle';
     protected $description = 'Handle events from node app';
 
-    public function handle(): void
-    {
-
-    }
+    public function handle(): void {}
 }

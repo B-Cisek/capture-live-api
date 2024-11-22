@@ -10,7 +10,7 @@ use Illuminate\Validation\Rule;
 
 final class StoreStreamRequest extends FormRequest
 {
-    const string REG_EXP_DATE = '/(\d\d\d\d)(-)?(\d\d)(-)?(\d\d)(T)?(\d\d)(:)?(\d\d)(:)?(\d\d)(\.\d+)?(Z|([+-])(\d\d)(:)?(\d\d))/';
+    public const string REG_EXP_DATE = '/(\d\d\d\d)(-)?(\d\d)(-)?(\d\d)(T)?(\d\d)(:)?(\d\d)(:)?(\d\d)(\.\d+)?(Z|([+-])(\d\d)(:)?(\d\d))/';
 
     public function rules(): array
     {

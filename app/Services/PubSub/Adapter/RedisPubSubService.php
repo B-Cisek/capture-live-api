@@ -7,11 +7,9 @@ namespace App\Services\PubSub\Adapter;
 use App\Services\PubSub\Interfaces\PubSubInterface;
 use Redis;
 
-class RedisPubSubService implements PubSubInterface
+final class RedisPubSubService implements PubSubInterface
 {
-    public function __construct(private readonly Redis $redis)
-    {
-    }
+    public function __construct(private readonly Redis $redis) {}
 
     public function publish(string $channel, string $message): void
     {

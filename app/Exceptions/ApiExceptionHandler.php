@@ -36,7 +36,7 @@ final class ApiExceptionHandler
         if (! Config::get('app.debug')) {
             return new JsonResponse([
                 'error' => true,
-                'message' => 'A Error Occurred'
+                'message' => 'A Error Occurred',
             ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
 

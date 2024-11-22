@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Http;
 /**
  * TODO: Refactor
  */
-class TwitchApi
+final class TwitchApi
 {
     private const string AUTH_URL = 'https://id.twitch.tv/oauth2/token';
     private const string API_URL = 'https://api.twitch.tv/helix';
@@ -33,10 +33,10 @@ class TwitchApi
     {
         $response = Http::withToken($this->token)
             ->withHeaders([
-                'Client-Id' => $this->clientId
+                'Client-Id' => $this->clientId,
             ])
             ->withQueryParameters([
-                'user_login' => $username
+                'user_login' => $username,
             ])
             ->get(self::API_URL . '/streams');
 
@@ -46,11 +46,11 @@ class TwitchApi
             return false;
         }
 
-        if ($data[0]['type'] === 'live') {
-            return true;
-        }
+        return (bool) ('live' === $data[0]['type'])
 
-        return false;
+
+
+        ;
     }
 
     private function getAccessToken(): string
@@ -77,12 +77,10 @@ class TwitchApi
                     'user_id' => $this->stream->user->id,
                 ],
                 [
-                    'value' => $token
-                ]
+                    'value' => $token,
+                ],
             );
-        }
-        else
-        {
+        } else {
             $token =  $token->value;
         }
 

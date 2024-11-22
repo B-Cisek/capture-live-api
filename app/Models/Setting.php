@@ -25,14 +25,6 @@ final class Setting extends Model
         return $this->belongsTo(User::class);
     }
 
-    protected function casts(): array
-    {
-        return [
-            'updated_at' => 'datetime',
-            'name' => \App\Enums\Setting::class,
-        ];
-    }
-
     public function scopeByName(Builder $builder, string $name): void
     {
         $builder->where('name', $name);
@@ -41,5 +33,13 @@ final class Setting extends Model
     public function scopeByUser(Builder $builder, string $userId): void
     {
         $builder->where('user_id', $userId);
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'updated_at' => 'datetime',
+            'name' => \App\Enums\Setting::class,
+        ];
     }
 }
