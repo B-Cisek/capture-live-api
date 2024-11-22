@@ -2,6 +2,8 @@ FROM serversideup/php:8.3-fpm-nginx-bookworm AS base
 
 FROM base AS development
 
+ENV PHP_OPCACHE_ENABLE=1
+
 # Switch to root so we can do root things
 USER root
 
@@ -28,3 +30,5 @@ FROM base AS production
 
 # Copy our app files as www-data (33:33)
 COPY --chown=www-data:www-data . /var/www/html
+
+RUN composer install --no-interaction --optimize-autoloader --no-dev
