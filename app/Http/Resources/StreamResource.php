@@ -13,7 +13,8 @@ final class StreamResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'username' => $this->username,
+            'channel' => $this->channel,
+            'quality' => $this->quality,
             'platform' => $this->platform,
             'startAt' => $this->start_at,
             'endAt' => $this->end_at,

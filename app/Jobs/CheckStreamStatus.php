@@ -5,26 +5,25 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\Enums\RecordingStatus;
+use App\Events\StartRecording;
 use App\Models\Stream;
 use App\Services\Api\Twitch\TwitchApi;
-use App\Services\PubSub\Interfaces\PubSubInterface;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
-final class CheckStreamStatus
+class CheckStreamStatus
 {
     private Stream $stream;
-
-    public function __construct(private readonly PubSubInterface $pubSub) {}
 
     public function __invoke(): void
     {
         $streams = Stream::query()->with('user.settings')->get();
 
-        $streams->each(function (Stream $stream): void {
+        $streams->each(function (Stream $stream) {
             $this->stream = $stream;
 
             if ($this->isReadyToRecord()) {
-                $this->pubSub->publish(PubSubInterface::RECORDING_CHANNEL, $this->stream->toJson());
+                StartRecording::dispatch($this->stream);
             }
         });
     }
@@ -35,7 +34,7 @@ final class CheckStreamStatus
             $this->isActive() &&
             $this->isStatusReady() &&
             $this->isDatesValid() &&
-            $this->isUserLive();
+            $this->isChannelLive();
     }
 
     private function isActive(): bool
@@ -45,12 +44,17 @@ final class CheckStreamStatus
 
     private function isStatusReady(): bool
     {
-        return RecordingStatus::READY === $this->stream->status;
+        return $this->stream->status === RecordingStatus::READY;
     }
 
-    private function isUserLive(): bool
+    private function isChannelLive(): bool
     {
-        return (new TwitchApi($this->stream))->isUserLive($this->stream->username);
+        try {
+            return (new TwitchApi($this->stream))->isChannelLive();
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return false;
+        }
     }
 
     private function isDatesValid(): bool
@@ -58,7 +62,7 @@ final class CheckStreamStatus
         $startAt = $this->stream->start_at;
         $endAt = $this->stream->end_at;
 
-        if (null === $startAt && null === $endAt) {
+        if (is_null($startAt) && is_null($endAt)) {
             return true;
         }
 

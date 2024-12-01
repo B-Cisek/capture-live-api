@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  app:
+    container_name: app-capture-live
+    image: bartek2k/capture-live-api:latest
+    ports:
+      - '80:8080'
+      - '443:8443'
+    env_file:
+      - .env
+
+  task:
+    image: bartek2k/capture-live-api:latest
+    container_name: task-capture-live
+    env_file:
+      - .env
+    command: [ "php", "/var/www/html/artisan", "schedule:work" ]
+    stop_signal: SIGTERM # Set this for graceful shutdown if you're using fpm-apache or fpm-nginx
+    healthcheck:
+      # This is our native healthcheck script for the scheduler
+      test: [ "CMD", "healthcheck-schedule" ]
+      start_period: 10s
+
+  redis:
+    image: redis:6
+    container_name: redis-capture-live
+    ports:
+      - '6379:6379'
+    command: "redis-server --appendonly yes --requirepass redispassword"
+
+  postgres:
+    image: postgres:14
+    container_name: db-capture-live
+    environment:
+      POSTGRES_USER: yourusername
+      POSTGRES_PASSWORD: yourpassword
+      POSTGRES_DB: capture_live
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "yourusername" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:

@@ -16,7 +16,8 @@ return new class () extends Migration {
             $table->uuid('id')->primary();
             $table->foreignIdFor(User::class);
             $table->enum('platform', Platform::toArray());
-            $table->string('username');
+            $table->string('channel');
+            $table->string('quality')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamp('start_at')->nullable();
             $table->timestamp('end_at')->nullable();

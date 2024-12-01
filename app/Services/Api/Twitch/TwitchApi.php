@@ -8,11 +8,10 @@ use App\Enums\Setting;
 use App\Models\Stream;
 use Illuminate\Support\Facades\Http;
 
-/**
- * TODO: Refactor
- */
 final class TwitchApi
 {
+    use Token;
+
     private const string AUTH_URL = 'https://id.twitch.tv/oauth2/token';
     private const string API_URL = 'https://api.twitch.tv/helix';
     private ?string $clientId;
@@ -24,19 +23,33 @@ final class TwitchApi
     {
         $this->stream = $stream;
 
-        $this->clientId = $stream->user->settings()->where('name', Setting::TWITCH_CLIENT_ID)?->first()->value;
-        $this->clientSecret = $stream->user->settings()->where('name', Setting::TWITCH_SECRET_KEY)?->first()->value;
+        $clientId = $stream->user->settings()->where('name', Setting::TWITCH_CLIENT_ID)?->first()->value;
+
+        if (!$clientId) {
+            throw new \Exception('Twitch client id not found');
+        }
+
+        $this->clientId = $clientId;
+
+        $clientSecret = $stream->user->settings()->where('name', Setting::TWITCH_SECRET_KEY)?->first()->value;
+
+        if (!$clientSecret) {
+            throw new \Exception('Twitch secret key not found');
+        }
+
+        $this->clientSecret = $clientSecret;
+
         $this->token = $this->getToken();
     }
 
-    public function isUserLive(string $username): bool
+    public function isChannelLive(): bool
     {
         $response = Http::withToken($this->token)
             ->withHeaders([
-                'Client-Id' => $this->clientId,
+                'Client-Id' => $this->clientId
             ])
             ->withQueryParameters([
-                'user_login' => $username,
+                'user_login' => $this->stream->channel
             ])
             ->get(self::API_URL . '/streams');
 
@@ -46,44 +59,10 @@ final class TwitchApi
             return false;
         }
 
-        return (bool) ('live' === $data[0]['type'])
-
-
-
-        ;
-    }
-
-    private function getAccessToken(): string
-    {
-        $response = Http::withQueryParameters([
-            'client_id' => $this->clientId,
-            'client_secret' => $this->clientSecret,
-            'grant_type' => 'client_credentials',
-        ])->post(self::AUTH_URL);
-
-        return $response->json('access_token');
-    }
-
-    private function getToken(): string
-    {
-        $token = $this->stream->user->settings()->where('name', Setting::TWITCH_TOKEN)->first();
-
-        if (!$token) {
-            $token = $this->getAccessToken();
-
-            \App\Models\Setting::query()->updateOrInsert(
-                [
-                    'name' => Setting::TWITCH_TOKEN,
-                    'user_id' => $this->stream->user->id,
-                ],
-                [
-                    'value' => $token,
-                ],
-            );
-        } else {
-            $token =  $token->value;
+        if ($data[0]['type'] === 'live') {
+            return true;
         }
 
-        return $token;
+        return false;
     }
 }

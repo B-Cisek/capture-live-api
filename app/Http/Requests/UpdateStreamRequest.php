@@ -13,7 +13,8 @@ final class UpdateStreamRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'username' => ['required', 'string', 'max:255'],
+            'channel' => ['required', 'string', 'max:255'],
+            'quality' => ['nullable', 'string', 'max:255'],
             'platform' => ['required', Rule::enum(Platform::class)],
             'start_at' => ['nullable', 'date'],
             'end_at' =>  ['nullable', 'date'],

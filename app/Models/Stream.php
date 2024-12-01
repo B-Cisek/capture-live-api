@@ -16,7 +16,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /**
  * @property string $id
  * @property Platform $platform
- * @property string $username
+ * @property string $channel
+ * @property string $quality
  * @property DateTimeImmutable $start_at
  * @property DateTimeImmutable $end_at
  * @property RecordingStatus $status
@@ -32,12 +33,13 @@ final class Stream extends Model
 
     protected $fillable = [
         'platform',
-        'username',
+        'channel',
         'start_at',
         'end_at',
         'is_active',
         'status',
         'user_id',
+        'quality',
     ];
 
     public function startRecording(): void
