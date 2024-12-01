@@ -6,6 +6,7 @@ namespace App\Services\Api\Twitch;
 
 use App\Enums\Setting;
 use App\Models\Stream;
+use Exception;
 use Illuminate\Support\Facades\Http;
 
 final class TwitchApi
@@ -26,7 +27,7 @@ final class TwitchApi
         $clientId = $stream->user->settings()->where('name', Setting::TWITCH_CLIENT_ID)?->first()->value;
 
         if (!$clientId) {
-            throw new \Exception('Twitch client id not found');
+            throw new Exception('Twitch client id not found');
         }
 
         $this->clientId = $clientId;
@@ -34,7 +35,7 @@ final class TwitchApi
         $clientSecret = $stream->user->settings()->where('name', Setting::TWITCH_SECRET_KEY)?->first()->value;
 
         if (!$clientSecret) {
-            throw new \Exception('Twitch secret key not found');
+            throw new Exception('Twitch secret key not found');
         }
 
         $this->clientSecret = $clientSecret;
@@ -46,10 +47,10 @@ final class TwitchApi
     {
         $response = Http::withToken($this->token)
             ->withHeaders([
-                'Client-Id' => $this->clientId
+                'Client-Id' => $this->clientId,
             ])
             ->withQueryParameters([
-                'user_login' => $this->stream->channel
+                'user_login' => $this->stream->channel,
             ])
             ->get(self::API_URL . '/streams');
 
@@ -59,10 +60,10 @@ final class TwitchApi
             return false;
         }
 
-        if ($data[0]['type'] === 'live') {
-            return true;
-        }
+        return (bool) ('live' === $data[0]['type'])
 
-        return false;
+
+
+        ;
     }
 }

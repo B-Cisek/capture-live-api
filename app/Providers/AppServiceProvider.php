@@ -30,7 +30,7 @@ final class AppServiceProvider extends ServiceProvider
         AuthServiceContract::class => AuthService::class,
         Cache::class => RedisCache::class,
         JwtBlacklist::class => JwtBlacklistService::class,
-        TwitchApiInterface::class => TwitchApi::class
+        TwitchApiInterface::class => TwitchApi::class,
     ];
 
     public function register(): void

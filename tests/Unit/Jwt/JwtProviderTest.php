@@ -6,6 +6,7 @@ namespace Tests\Unit\Jwt;
 
 use App\Services\Jwt\Concrete\JwtProvider;
 use App\Services\Jwt\Interfaces\JwtProvider as JwtProviderContract;
+use DateInterval;
 use DateTimeImmutable;
 use Illuminate\Support\Facades\Config;
 use Lcobucci\JWT\Configuration;
@@ -71,7 +72,7 @@ final class JwtProviderTest extends TestCase
         $this->assertEquals($this->claims['email'], $parsedToken->claims()->get('email'));
         $this->assertEquals(Config::get('app.url'), $parsedToken->claims()->get(RegisteredClaims::ISSUER));
         $this->assertEquals(
-            (new DateTimeImmutable())->add(new \DateInterval('P5D'))->format('Y-m-d'),
+            (new DateTimeImmutable())->add(new DateInterval('P5D'))->format('Y-m-d'),
             $parsedToken->claims()->get(RegisteredClaims::EXPIRATION_TIME)->format('Y-m-d'),
         );
         $this->assertEquals($this->headers['foo'], $parsedToken->headers()->get('foo'));

@@ -6,7 +6,7 @@ namespace App\Listeners;
 
 use App\Events\StartRecording;
 
-class SetInProgressStatus
+final class SetInProgressStatus
 {
     public function handle(StartRecording $event): void
     {

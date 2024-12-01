@@ -8,10 +8,11 @@ use App\Enums\RecordingStatus;
 use App\Events\StartRecording;
 use App\Models\Stream;
 use App\Services\Api\Twitch\TwitchApi;
+use Exception;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
-class CheckStreamStatus
+final class CheckStreamStatus
 {
     private Stream $stream;
 
@@ -19,7 +20,7 @@ class CheckStreamStatus
     {
         $streams = Stream::query()->with('user.settings')->get();
 
-        $streams->each(function (Stream $stream) {
+        $streams->each(function (Stream $stream): void {
             $this->stream = $stream;
 
             if ($this->isReadyToRecord()) {
@@ -44,14 +45,14 @@ class CheckStreamStatus
 
     private function isStatusReady(): bool
     {
-        return $this->stream->status === RecordingStatus::READY;
+        return RecordingStatus::READY === $this->stream->status;
     }
 
     private function isChannelLive(): bool
     {
         try {
             return (new TwitchApi($this->stream))->isChannelLive();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error($e->getMessage());
             return false;
         }
@@ -62,7 +63,7 @@ class CheckStreamStatus
         $startAt = $this->stream->start_at;
         $endAt = $this->stream->end_at;
 
-        if (is_null($startAt) && is_null($endAt)) {
+        if (null === $startAt && null === $endAt) {
             return true;
         }
 

@@ -35,8 +35,8 @@ trait Token
                 'user_id' => $this->stream->user->id,
             ],
             [
-                'value' => $token
-            ]
+                'value' => $token,
+            ],
         );
     }
 

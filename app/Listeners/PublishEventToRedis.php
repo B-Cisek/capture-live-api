@@ -8,15 +8,14 @@ use App\DTO\RecordStream;
 use App\Events\StartRecording;
 use App\Services\PubSub\Interfaces\PubSubInterface;
 use Illuminate\Support\Facades\Log;
+use JsonException;
 
-readonly class PublishEventToRedis
+final readonly class PublishEventToRedis
 {
-    public function __construct(private PubSubInterface $pubSub)
-    {
-    }
+    public function __construct(private PubSubInterface $pubSub) {}
 
     /**
-     * @throws \JsonException
+     * @throws JsonException
      */
     public function handle(StartRecording $event): void
     {

@@ -7,7 +7,7 @@ namespace App\DTO;
 use App\Models\Stream;
 use DateTimeImmutable;
 
-readonly class RecordStream
+final readonly class RecordStream
 {
     public function __construct(
         public string $channel,
@@ -15,9 +15,7 @@ readonly class RecordStream
         public string $quality,
         public ?DateTimeImmutable $startAt = null,
         public ?DateTimeImmutable $endAt = null,
-    )
-    {
-    }
+    ) {}
 
     public static function fromStream(Stream $stream): RecordStream
     {
@@ -26,7 +24,7 @@ readonly class RecordStream
             $stream->platform->name,
             $stream->quality,
             $stream->start_at,
-            $stream->end_at
+            $stream->end_at,
         );
     }
 
