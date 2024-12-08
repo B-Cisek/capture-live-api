@@ -4,8 +4,6 @@ namespace Tests\Unit\EventHandler;
 
 use App\Services\EventHandler\Concrete\EventHandler;
 use App\Services\EventHandler\Concrete\EventHandlerResolver;
-use App\Services\EventHandler\Handlers\RecordingStarted;
-use App\Services\EventHandler\Interfaces\Event;
 use Exception;
 use Mockery;
 use PHPUnit\Framework\Attributes\Test;
