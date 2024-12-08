@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   app:
     container_name: app-capture-live
@@ -9,6 +7,8 @@ services:
       - '443:8443'
     env_file:
       - .env
+    networks:
+      - capture-live-network
 
   task:
     image: bartek2k/capture-live-api:latest
@@ -21,6 +21,8 @@ services:
       # This is our native healthcheck script for the scheduler
       test: [ "CMD", "healthcheck-schedule" ]
       start_period: 10s
+    networks:
+      - capture-live-network
 
   redis:
     image: redis:6
@@ -34,9 +36,11 @@ services:
       - ./.docker/redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
       - redis_data:/data
     restart: always
+    networks:
+      - capture-live-network
 
   postgres:
-    image: postgres:14
+    image: postgres:17-alpine
     container_name: db-capture-live
     env_file:
       - .env
@@ -54,9 +58,15 @@ services:
       timeout: 5s
       retries: 5
     restart: always
+    networks:
+      - capture-live-network
 
 volumes:
   postgres_data:
     driver: local
   redis_data:
     driver: local
+
+networks:
+  capture-live-network:
+    driver: bridge
