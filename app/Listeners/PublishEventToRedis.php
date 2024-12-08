@@ -7,11 +7,7 @@ namespace App\Listeners;
 use App\DTO\RecordStream;
 use App\Events\StartRecording;
 use App\Services\PubSub\Interfaces\PubSubInterface;
-<<<<<<< Updated upstream
-use Illuminate\Support\Facades\Log;
 use JsonException;
-=======
->>>>>>> Stashed changes
 
 final readonly class PublishEventToRedis
 {
