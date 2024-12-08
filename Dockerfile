@@ -2,8 +2,6 @@ FROM serversideup/php:8.4-fpm-nginx-bookworm AS base
 
 FROM base AS development
 
-ENV PHP_OPCACHE_ENABLE=1
-
 # Switch to root so we can do root things
 USER root
 
@@ -27,6 +25,8 @@ USER www-data
 # Since we're calling "base", production isn't
 # calling any of that permission stuff
 FROM base AS production
+
+COPY ./.docker/nginx/default.conf /etc/nginx/conf.d/default.conf
 
 # Copy our app files as www-data (33:33)
 COPY --chown=www-data:www-data . /var/www/html
