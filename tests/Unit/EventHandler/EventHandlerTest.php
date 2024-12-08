@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\EventHandler;
 
 use App\Services\EventHandler\Concrete\EventHandler;
@@ -9,7 +11,7 @@ use Mockery;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
-class EventHandlerTest extends TestCase
+final class EventHandlerTest extends TestCase
 {
     private EventHandler $eventHandler;
 
@@ -44,7 +46,7 @@ class EventHandlerTest extends TestCase
 
         $input = json_encode([
             'event' => 'non.existent.event',
-            'data' => []
+            'data' => [],
         ]);
 
         $this->eventHandler->handle($input);
@@ -56,15 +58,15 @@ class EventHandlerTest extends TestCase
         $this->expectException(Exception::class);
         $this->expectExceptionMessage("Handler Must Implement Event Interface");
 
-        $invalidEventClass = new class() {
-            public function __invoke() {}
+        $invalidEventClass = new class () {
+            public function __invoke(): void {}
         };
 
         $this->mockEventHandlerResolver('recording-started', get_class($invalidEventClass));
 
         $input = json_encode([
             'event' => 'recording-started',
-            'data' => []
+            'data' => [],
         ]);
 
         $this->eventHandler->handle($input);
