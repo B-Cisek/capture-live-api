@@ -25,13 +25,17 @@ services:
   redis:
     image: redis:6
     container_name: redis-capture-live
+    env_file:
+      - .env
     ports:
       - '6379:6379'
-    command: "redis-server --appendonly yes --requirepass redispassword"
+    command: "redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}"
 
   postgres:
     image: postgres:14
     container_name: db-capture-live
+    env_file:
+      - .env
     environment:
       POSTGRES_USER: yourusername
       POSTGRES_PASSWORD: yourpassword
