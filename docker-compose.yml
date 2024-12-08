@@ -16,7 +16,8 @@ services:
             - .:/var/www/html
 
     redis:
-        image: redis:latest
+        image: redis:6
         container_name: redis-capture-live
         ports:
-            - '6379:6379'
+            - '${REDIS_PORT}:${REDIS_PORT}'
+        command: "redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}"
