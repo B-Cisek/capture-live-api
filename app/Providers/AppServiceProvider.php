@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
-use App\Services\Api\Twitch\TwitchApi;
-use App\Services\Api\Twitch\TwitchApiInterface;
 use App\Services\AuthService\Concrete\AuthService;
 use App\Services\AuthService\Interfaces\AuthService as AuthServiceContract;
 use App\Services\Cache\Adapter\RedisCache;
@@ -31,7 +29,7 @@ final class AppServiceProvider extends ServiceProvider
         AuthServiceContract::class => AuthService::class,
         Cache::class => RedisCache::class,
         JwtBlacklist::class => JwtBlacklistService::class,
-        EventHandler::class => \App\Services\EventHandler\Concrete\EventHandler::class
+        EventHandler::class => \App\Services\EventHandler\Concrete\EventHandler::class,
     ];
 
     public function register(): void

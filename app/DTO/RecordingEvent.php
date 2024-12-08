@@ -5,16 +5,15 @@ declare(strict_types=1);
 namespace App\DTO;
 
 use App\Services\EventHandler\Enum\Event;
+use DateTimeImmutable;
 
-readonly class RecordingEvent
+final readonly class RecordingEvent
 {
     public function __construct(
         public Event $event,
         public string $channelName,
-        public \DateTimeImmutable $timestamp,
-    )
-    {
-    }
+        public DateTimeImmutable $timestamp,
+    ) {}
 
     public static function fromJson(string $json): RecordingEvent
     {
@@ -23,7 +22,7 @@ readonly class RecordingEvent
         return new self(
             Event::from($data->event),
             $data->channelName,
-            \DateTimeImmutable::createFromFormat(DATE_ATOM, $data->timestamp),
+            DateTimeImmutable::createFromFormat(DATE_ATOM, $data->timestamp),
         );
     }
 }

@@ -7,6 +7,7 @@ namespace App\Services\PubSub\Adapter;
 use App\Services\PubSub\Interfaces\PubSubInterface;
 use Illuminate\Support\Facades\Log;
 use Redis;
+use RedisException;
 
 final class RedisPubSubService implements PubSubInterface
 {
@@ -21,7 +22,7 @@ final class RedisPubSubService implements PubSubInterface
     {
         try {
             $this->redis->subscribe($channels, $callback);
-        } catch (\RedisException $e) {
+        } catch (RedisException $e) {
             Log::error($e->getMessage());
         }
     }
