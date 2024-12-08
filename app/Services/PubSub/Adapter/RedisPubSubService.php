@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\PubSub\Adapter;
 
 use App\Services\PubSub\Interfaces\PubSubInterface;
+use Illuminate\Support\Facades\Log;
 use Redis;
 
 final class RedisPubSubService implements PubSubInterface
@@ -18,6 +19,10 @@ final class RedisPubSubService implements PubSubInterface
 
     public function subscribe(array $channels, callable $callback): void
     {
-        $this->redis->subscribe($channels, $callback);
+        try {
+            $this->redis->subscribe($channels, $callback);
+        } catch (\RedisException $e) {
+            Log::error($e->getMessage());
+        }
     }
 }

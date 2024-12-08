@@ -10,6 +10,7 @@ use App\Services\AuthService\Concrete\AuthService;
 use App\Services\AuthService\Interfaces\AuthService as AuthServiceContract;
 use App\Services\Cache\Adapter\RedisCache;
 use App\Services\Cache\Interfaces\Cache;
+use App\Services\EventHandler\Interfaces\EventHandler;
 use App\Services\Jwt\Concrete\JwtBlacklistService;
 use App\Services\Jwt\Concrete\JwtProvider;
 use App\Services\Jwt\Interfaces\JwtBlacklist;
@@ -30,7 +31,11 @@ final class AppServiceProvider extends ServiceProvider
         AuthServiceContract::class => AuthService::class,
         Cache::class => RedisCache::class,
         JwtBlacklist::class => JwtBlacklistService::class,
+<<<<<<< Updated upstream
         TwitchApiInterface::class => TwitchApi::class,
+=======
+        EventHandler::class => \App\Services\EventHandler\Concrete\EventHandler::class
+>>>>>>> Stashed changes
     ];
 
     public function register(): void

@@ -7,8 +7,11 @@ namespace App\Listeners;
 use App\DTO\RecordStream;
 use App\Events\StartRecording;
 use App\Services\PubSub\Interfaces\PubSubInterface;
+<<<<<<< Updated upstream
 use Illuminate\Support\Facades\Log;
 use JsonException;
+=======
+>>>>>>> Stashed changes
 
 final readonly class PublishEventToRedis
 {
@@ -21,7 +24,6 @@ final readonly class PublishEventToRedis
     {
         $recordStream = RecordStream::fromStream($event->stream);
 
-        Log::log('info', json_encode($recordStream->toArray(), JSON_THROW_ON_ERROR));
         $this->pubSub->publish(PubSubInterface::RECORDING_CHANNEL, json_encode($recordStream->toArray(), JSON_THROW_ON_ERROR));
     }
 }

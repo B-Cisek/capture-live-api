@@ -10,6 +10,6 @@ final class SetInProgressStatus
 {
     public function handle(StartRecording $event): void
     {
-        $event->stream->startRecording();
+        //$event->stream->startRecording();
     }
 }

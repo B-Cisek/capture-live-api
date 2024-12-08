@@ -34,8 +34,8 @@ final readonly class RecordStream
             'channel' => $this->channel,
             'platform' => $this->platform,
             'quality' => $this->quality,
-            'start_at' => $this->startAt?->format(DATE_ATOM),
-            'end_at' => $this->endAt?->format(DATE_ATOM),
+            'startAt' => $this->startAt?->format(DATE_ATOM),
+            'endAt' => $this->endAt?->format(DATE_ATOM),
         ];
     }
 }
