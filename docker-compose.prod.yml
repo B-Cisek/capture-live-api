@@ -6,13 +6,23 @@ services:
       - "--api.insecure=true"  # Enable Traefik dashboard (optional)
       - "--providers.docker=true"  # Use Docker provider
       - "--entrypoints.web.address=:80"  # Define entrypoint for HTTP
+      - "--entrypoints.websecure.address=:443"  # Define entrypoint for HTTPS
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"  # Enable TLS-ALPN challenge
+      # Alternatively, use DNS-01 challenge with Cloudflare
+      - "--certificatesresolvers.myresolver.acme.dnschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.dnschallenge.provider=cloudflare"
+      - "--certificatesresolvers.myresolver.acme.email=${CF_API_EMAIL}"  # Your email for Let's Encrypt
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"  # Where to store certs
     ports:
-      - "80:80"  # HTTP traffic
+      - "80:80"    # HTTP
+      - "443:443"  # HTTPS
       - "8080:8080"  # Traefik dashboard (optional)
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"  # Enable Docker provider
-    labels:
-      - "traefik.enable=true"  # Enable Traefik for this container
+      - "./letsencrypt:/letsencrypt"  # Volume for Let's Encrypt certs
+    environment:
+      - "CF_API_EMAIL=${CF_API_EMAIL}"  # Your Cloudflare account email
+      - "CF_API_KEY=${CF_API_KEY}"  # Cloudflare global API key or API token
     networks:
       - traefik
 
