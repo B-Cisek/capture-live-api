@@ -31,4 +31,4 @@ COPY --chown=www-data:www-data . /var/www/html
 
 RUN composer install --no-interaction --optimize-autoloader --no-dev
 
-COPY .docker/nginx/default.conf /etc/nginx/conf.d/default.conf
+# COPY .docker/nginx/default.conf /etc/nginx/conf.d/default.conf

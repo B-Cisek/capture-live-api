@@ -33,6 +33,8 @@ services:
       - traefik.http.routers.app-capture-live-https.tls.certresolver=cloudflare
       - traefik.http.routers.app-capture-live-https.entrypoints=websecure
       - traefik.http.routers.app-capture-live-https.rule=Host(`api.bartlomiejcisek.online`)
+      - traefik.http.services.app-capture-live-https.loadbalancer.server.port=8443
+      - traefik.http.services.app-capture-live.loadbalancer.server.port=8080
 
   task:
     image: bartek2k/capture-live-api:latest
