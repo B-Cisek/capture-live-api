@@ -22,19 +22,12 @@ services:
     env_file:
       - .env
     networks:
-      - capture-live-network
       - traefik
     restart: unless-stopped
     labels:
       - traefik.enable=true
       - traefik.http.routers.app-capture-live.rule=Host(`api.bartlomiejcisek.online`)
       - traefik.http.routers.app-capture-live.entrypoints=web
-      - traefik.http.routers.app-capture-live-https.tls=true
-      - traefik.http.routers.app-capture-live-https.tls.certresolver=cloudflare
-      - traefik.http.routers.app-capture-live-https.entrypoints=websecure
-      - traefik.http.routers.app-capture-live-https.rule=Host(`api.bartlomiejcisek.online`)
-      - traefik.http.services.app-capture-live-https.loadbalancer.server.port=8443
-      - traefik.http.services.app-capture-live.loadbalancer.server.port=8080
 
   task:
     image: bartek2k/capture-live-api:latest
@@ -48,8 +41,6 @@ services:
       test: [ "CMD", "healthcheck-schedule" ]
       start_period: 10s
     restart: unless-stopped
-    networks:
-      - capture-live-network
 
   redis:
     image: redis:6
@@ -63,8 +54,6 @@ services:
       - ./.docker/redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
       - redis_data:/data
     restart: unless-stopped
-    networks:
-      - capture-live-network
 
   postgres:
     image: postgres:17-alpine
@@ -85,8 +74,6 @@ services:
       timeout: 5s
       retries: 5
     restart: unless-stopped
-    networks:
-      - capture-live-network
 
 volumes:
   postgres_data:
@@ -97,7 +84,5 @@ volumes:
     driver: local
 
 networks:
-  capture-live-network:
-    driver: bridge
   traefik:
     external: true
