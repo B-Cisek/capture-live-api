@@ -1,46 +1,38 @@
 services:
   traefik:
-    image: traefik:v2.10
+    image: traefik:v3.1.5
     container_name: traefik
-    command:
-      - "--api.insecure=true"  # Enable Traefik dashboard (optional)
-      - "--providers.docker=true"  # Use Docker provider
-      - "--entrypoints.web.address=:80"  # Define entrypoint for HTTP
-      - "--entrypoints.websecure.address=:443"  # Define entrypoint for HTTPS
-      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"  # Enable TLS-ALPN challenge
-      # Alternatively, use DNS-01 challenge with Cloudflare
-      - "--certificatesresolvers.myresolver.acme.dnschallenge=true"
-      - "--certificatesresolvers.myresolver.acme.dnschallenge.provider=cloudflare"
-      - "--certificatesresolvers.myresolver.acme.email=${CF_API_EMAIL}"  # Your email for Let's Encrypt
-      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"  # Where to store certs
     ports:
-      - "80:80"    # HTTP
-      - "443:443"  # HTTPS
-      - "8080:8080"  # Traefik dashboard (optional)
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"  # Enable Docker provider
-      - "./letsencrypt:/letsencrypt"  # Volume for Let's Encrypt certs
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./.docker/traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - certs:/var/traefik/certs/:rw
     environment:
-      - "CF_API_EMAIL=${CF_API_EMAIL}"  # Your Cloudflare account email
-      - "CF_API_KEY=${CF_API_KEY}"  # Cloudflare global API key or API token
+      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
+    restart: unless-stopped
     networks:
       - traefik
 
   app:
     container_name: app-capture-live
     image: bartek2k/capture-live-api:latest
-    ports:
-      - '80:8080'
-      - '443:8443'
     env_file:
       - .env
     networks:
       - capture-live-network
       - traefik
+    restart: unless-stopped
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.app-capture-live.rule=Host(`api.bartlomiejcisek.online`)"
-      - "traefik.http.services.app-capture-live.loadbalancer.server.port=80"
+      - traefik.enable=true
+      - traefik.http.routers.app-capture-live.rule=Host(`api.bartlomiejcisek.online`)
+      - traefik.http.routers.app-capture-live.entrypoints=web
+      - traefik.http.routers.app-capture-live-https.tls=true
+      - traefik.http.routers.app-capture-live-https.tls.certresolver=cloudflare
+      - traefik.http.routers.app-capture-live-https.entrypoints=websecure
+      - traefik.http.routers.app-capture-live-https.rule=Host(`api.bartlomiejcisek.online`)
 
   task:
     image: bartek2k/capture-live-api:latest
@@ -53,6 +45,7 @@ services:
       # This is our native healthcheck script for the scheduler
       test: [ "CMD", "healthcheck-schedule" ]
       start_period: 10s
+    restart: unless-stopped
     networks:
       - capture-live-network
 
@@ -67,7 +60,7 @@ services:
     volumes:
       - ./.docker/redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
       - redis_data:/data
-    restart: always
+    restart: unless-stopped
     networks:
       - capture-live-network
 
@@ -89,7 +82,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    restart: always
+    restart: unless-stopped
     networks:
       - capture-live-network
 
@@ -97,6 +90,8 @@ volumes:
   postgres_data:
     driver: local
   redis_data:
+    driver: local
+  certs:
     driver: local
 
 networks:
