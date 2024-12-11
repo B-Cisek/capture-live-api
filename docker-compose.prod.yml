@@ -6,6 +6,7 @@ services:
       - .env
     networks:
       - traefik
+      - capture-live-network
     restart: unless-stopped
     depends_on:
       - postgres
@@ -30,6 +31,8 @@ services:
     depends_on:
       - postgres
       - redis
+    networks:
+      - capture-live-network
 
   redis:
     image: redis:6
@@ -43,6 +46,8 @@ services:
       - ./.docker/redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
       - redis_data:/data
     restart: unless-stopped
+    networks:
+      - capture-live-network
 
   postgres:
     image: postgres:17-alpine
@@ -63,6 +68,8 @@ services:
       timeout: 5s
       retries: 5
     restart: unless-stopped
+    networks:
+      - capture-live-network
 
 volumes:
   postgres_data:
@@ -71,5 +78,7 @@ volumes:
     driver: local
 
 networks:
+  capture-live-network:
+    driver: bridge
   traefik:
     external: true
