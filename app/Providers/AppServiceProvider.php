@@ -53,6 +53,7 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->bind(PubSubInterface::class, function () {
             $redis = new Redis();
             $config = Config::get('database.redis.default');
+            $redis->auth($config['password']);
             $redis->connect($config['host'], (int) $config['port']);
 
             return new RedisPubSubService($redis);
