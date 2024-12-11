@@ -1,21 +1,4 @@
 services:
-  traefik:
-    image: traefik:v3.1.5
-    container_name: traefik
-    ports:
-      - "80:80"
-      - "443:443"
-      - "8080:8080"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./.docker/traefik/traefik.yml:/etc/traefik/traefik.yml:ro
-      - certs:/var/traefik/certs/:rw
-    environment:
-      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
-    restart: unless-stopped
-    networks:
-      - traefik
-
   app:
     container_name: app-capture-live
     image: bartek2k/capture-live-api:latest
@@ -24,6 +7,9 @@ services:
     networks:
       - traefik
     restart: unless-stopped
+    depends_on:
+      - postgres
+      - redis
     labels:
       - traefik.enable=true
       - traefik.http.routers.app-capture-live.rule=Host(`api.bartlomiejcisek.online`)
@@ -41,6 +27,9 @@ services:
       test: [ "CMD", "healthcheck-schedule" ]
       start_period: 10s
     restart: unless-stopped
+    depends_on:
+      - postgres
+      - redis
 
   redis:
     image: redis:6
@@ -79,8 +68,6 @@ volumes:
   postgres_data:
     driver: local
   redis_data:
-    driver: local
-  certs:
     driver: local
 
 networks:
