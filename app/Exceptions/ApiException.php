@@ -7,7 +7,7 @@ namespace App\Exceptions;
 use Exception;
 use Illuminate\Http\JsonResponse;
 
-final class ApiException extends Exception
+class ApiException extends Exception
 {
     protected $message = 'An Error Occurred';
     protected $code = JsonResponse::HTTP_INTERNAL_SERVER_ERROR;
