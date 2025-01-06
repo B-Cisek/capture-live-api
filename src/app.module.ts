@@ -6,11 +6,13 @@ import { DataSource } from 'typeorm';
 import mongodb from '../config/mongodb';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot(mongodb()),
+    EventEmitterModule.forRoot(),
     AuthModule,
     UsersModule,
   ],
