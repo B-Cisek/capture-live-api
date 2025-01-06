@@ -9,6 +9,8 @@ import { SignInDto } from './dto/signInDto';
 import { User } from '../users/user.entity';
 import { HashService } from './hash.service';
 import { JwtService } from '@nestjs/jwt';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { UserSignUpEvent } from './events';
 
 @Injectable()
 export class AuthService {
@@ -16,6 +18,7 @@ export class AuthService {
     private readonly userService: UsersService,
     private readonly hashService: HashService,
     private readonly jwtService: JwtService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async signUp(signUpDto: SignUpDto): Promise<{ access_token: string }> {
@@ -30,6 +33,11 @@ export class AuthService {
     entity.password = await this.hashService.hash(signUpDto.password);
 
     const newUser = await this.userService.create(entity);
+
+    this.eventEmitter.emit(
+      'user.signUp',
+      new UserSignUpEvent(newUser._id.toString()),
+    );
 
     return {
       access_token: await this.createToken(newUser),
@@ -51,6 +59,11 @@ export class AuthService {
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
+
+    this.eventEmitter.emit(
+      'user.signIn',
+      new UserSignUpEvent(user._id.toString()),
+    );
 
     return {
       access_token: await this.createToken(user),
