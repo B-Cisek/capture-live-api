@@ -1,7 +1,7 @@
 import {
-  BadRequestException,
   Injectable,
   UnauthorizedException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { SignUpDto } from './dto/signUpDto';
@@ -18,11 +18,11 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async signUp(signUpDto: SignUpDto) {
+  async signUp(signUpDto: SignUpDto): Promise<{ access_token: string }> {
     const user = await this.userService.getByEmail(signUpDto.email);
 
     if (user) {
-      throw new BadRequestException('Email already exists');
+      throw new UnprocessableEntityException('Email already exists');
     }
 
     const entity = new User();
@@ -31,14 +31,12 @@ export class AuthService {
 
     const newUser = await this.userService.create(entity);
 
-    const payload = { sub: newUser._id.toString(), email: newUser.email };
-
     return {
-      access_token: await this.jwtService.signAsync(payload),
+      access_token: await this.createToken(newUser),
     };
   }
 
-  async signIn(signInDto: SignInDto) {
+  async signIn(signInDto: SignInDto): Promise<{ access_token: string }> {
     const user = await this.userService.getByEmail(signInDto.email);
 
     if (!user) {
@@ -54,10 +52,14 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    return {
+      access_token: await this.createToken(user),
+    };
+  }
+
+  private async createToken(user: User): Promise<string> {
     const payload = { sub: user._id.toString(), email: user.email };
 
-    return {
-      access_token: await this.jwtService.signAsync(payload),
-    };
+    return await this.jwtService.signAsync(payload);
   }
 }
