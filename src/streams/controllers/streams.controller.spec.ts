@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { Stream } from '../entities/stream.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { AuthGuard } from '../../auth/auth.guard';
+import { AuthGuard } from '../../auth/guards/auth.guard';
 
 describe('StreamsController', () => {
   let controller: StreamsController;

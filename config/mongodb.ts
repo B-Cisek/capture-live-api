@@ -1,6 +1,6 @@
 import * as process from 'node:process';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { User } from '../src/users/user.entity';
+import { User } from '../src/users/entities/user.entity';
 import { Stream } from '../src/streams/entities/stream.entity';
 import { Platform } from '../src/streams/entities/platform.entity';
 

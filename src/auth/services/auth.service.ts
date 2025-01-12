@@ -3,14 +3,14 @@ import {
   UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
-import { SignUpDto } from './dto/sign-up.dto';
-import { SignInDto } from './dto/sign-in.dto';
-import { User } from '../users/user.entity';
+import { UsersService } from '../../users/services/users.service';
+import { SignUpDto } from '../dto/sign-up.dto';
+import { SignInDto } from '../dto/sign-in.dto';
+import { User } from '../../users/entities/user.entity';
 import { HashService } from './hash.service';
 import { JwtService } from '@nestjs/jwt';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { UserSignUpEvent } from './events';
+import { UserSignUpEvent } from '../events';
 
 @Injectable()
 export class AuthService {

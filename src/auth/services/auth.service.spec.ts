@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
-import { UsersService } from '../users/users.service';
+import { UsersService } from '../../users/services/users.service';
 import { HashService } from './hash.service';
 import { JwtService } from '@nestjs/jwt';
-import { SignUpDto } from './dto/sign-up.dto';
-import { User } from '../users/user.entity';
+import { SignUpDto } from '../dto/sign-up.dto';
+import { User } from '../../users/entities/user.entity';
 import {
   UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { SignInDto } from './dto/sign-in.dto';
+import { SignInDto } from '../dto/sign-in.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 
 describe('AuthService', () => {

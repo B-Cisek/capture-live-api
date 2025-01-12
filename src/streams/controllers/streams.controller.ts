@@ -12,7 +12,7 @@ import {
 import { StreamsService } from '../services/streams.service';
 import { CreateStreamDto } from '../dto/create-stream.dto';
 import { UpdateStreamDto } from '../dto/update-stream.dto';
-import { AuthGuard } from '../../auth/auth.guard';
+import { AuthGuard } from '../../auth/guards/auth.guard';
 import { CurrentUser, Payload } from '../../users/user.decorator';
 import { PageOptionsDto } from '../../shared/paginator/page-options.dto';
 
