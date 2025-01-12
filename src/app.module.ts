@@ -7,6 +7,8 @@ import mongodb from '../config/mongodb';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { StreamsModule } from './streams/streams.module';
+import { SharedModule } from './shared/shared.module';
 
 @Module({
   imports: [
@@ -15,6 +17,8 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     EventEmitterModule.forRoot(),
     AuthModule,
     UsersModule,
+    StreamsModule,
+    SharedModule,
   ],
   controllers: [AppController],
 })

@@ -3,19 +3,21 @@ import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { HashService } from './hash.service';
 import { JwtService } from '@nestjs/jwt';
-import { SignUpDto } from './dto/signUpDto';
+import { SignUpDto } from './dto/sign-up.dto';
 import { User } from '../users/user.entity';
 import {
   UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { SignInDto } from './dto/signInDto';
+import { SignInDto } from './dto/sign-in.dto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 describe('AuthService', () => {
   let service: AuthService;
   let mockUsersService: Partial<UsersService>;
   let mockHashService: Partial<HashService>;
   let mockJwtService: Partial<JwtService>;
+  let mockEventEmitter: Partial<EventEmitter2>;
 
   beforeEach(async () => {
     mockUsersService = {
@@ -32,12 +34,17 @@ describe('AuthService', () => {
       signAsync: jest.fn(),
     };
 
+    mockEventEmitter = {
+      emit: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
         { provide: UsersService, useValue: mockUsersService },
         { provide: HashService, useValue: mockHashService },
         { provide: JwtService, useValue: mockJwtService },
+        { provide: EventEmitter2, useValue: mockEventEmitter },
       ],
     }).compile();
 

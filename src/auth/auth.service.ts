@@ -4,8 +4,8 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
-import { SignUpDto } from './dto/signUpDto';
-import { SignInDto } from './dto/signInDto';
+import { SignUpDto } from './dto/sign-up.dto';
+import { SignInDto } from './dto/sign-in.dto';
 import { User } from '../users/user.entity';
 import { HashService } from './hash.service';
 import { JwtService } from '@nestjs/jwt';
