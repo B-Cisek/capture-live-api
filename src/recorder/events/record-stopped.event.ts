@@ -1,1 +1,1 @@
-export class RecordStopEvent {}
+export class RecordStoppedEvent {}

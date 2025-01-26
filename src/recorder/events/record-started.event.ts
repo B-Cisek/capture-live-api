@@ -1,1 +1,1 @@
-export class RecordStartEvent {}
+export class RecordStartedEvent {}
