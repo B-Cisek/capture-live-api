@@ -8,7 +8,6 @@ describe('AuthController', () => {
   let authController: AuthController;
   let authService: AuthService;
 
-  // Create a mock for AuthService
   const mockAuthService = {
     signUp: jest.fn(() => Promise.resolve({ access_token: 'signed_up_token' })),
     login: jest.fn(() => Promise.resolve({ access_token: 'logged_in_token' })),
@@ -23,7 +22,7 @@ describe('AuthController', () => {
       .useValue({
         canActivate: (context: ExecutionContext) => {
           const request = context.switchToHttp().getRequest();
-          // Attach a fake user object for the 'me' endpoint
+
           request.user = { id: 1, email: 'john@example.com' };
           return true;
         },
@@ -37,8 +36,8 @@ describe('AuthController', () => {
   describe('singUp', () => {
     it('should sign up a user and return an access token', async () => {
       const signUpDto = {
-        password: 'password123',
         email: 'newuser@example.com',
+        password: 'password123',
       };
 
       const result = await authController.singUp(signUpDto);
@@ -61,11 +60,14 @@ describe('AuthController', () => {
 
   describe('me', () => {
     it('should return the user object from the request', () => {
-      // Create a fake request object with a user property.
-      const fakeRequest = { user: { id: 1, username: 'testuser' } };
+      const fakeRequest = { id: 'sdsa-ewqe-ewq213', email: 'john@example.com' };
 
       const result = authController.me(fakeRequest as any);
-      expect(result).toEqual({ id: 1, username: 'testuser' });
+
+      expect(result).toEqual({
+        id: 'sdsa-ewqe-ewq213',
+        email: 'john@example.com',
+      });
     });
   });
 });
