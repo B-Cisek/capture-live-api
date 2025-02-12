@@ -7,6 +7,8 @@ import { databaseConfig } from './config/database-config';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ChannelsModule } from './channels/channels.module';
+import { SharedModule } from './shared/shared.module';
 
 @Module({
   imports: [
@@ -15,6 +17,8 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     EventEmitterModule.forRoot(),
     UsersModule,
     AuthModule,
+    ChannelsModule,
+    SharedModule,
   ],
   controllers: [AppController],
 })

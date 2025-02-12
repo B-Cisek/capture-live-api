@@ -1,25 +1,17 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Entity, Column, OneToMany } from 'typeorm';
+import { AbstractEntity } from '../../shared/abstract.entity';
+import { Channel } from '../../channels/entities/channel.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
-export class User {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+export class User extends AbstractEntity {
   @Column({ unique: true })
   email: string;
 
+  @Exclude()
   @Column()
   password: string;
 
-  @UpdateDateColumn({ type: 'timestamp' })
-  updatedAt: Date;
-
-  @CreateDateColumn({ type: 'timestamp' })
-  createdAt: Date;
+  @OneToMany(() => Channel, (channel) => channel.user)
+  channels: Channel[];
 }

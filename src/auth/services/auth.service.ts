@@ -5,7 +5,6 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { HashService } from './hash.service';
-import { UsersService } from '../../users/users.service';
 import { SignUpDto } from '../dto/signup.dto';
 import { LoginDto } from '../dto/login.dto';
 import { User } from '../../users/entities/user.entity';
@@ -15,6 +14,7 @@ import {
   UserSignUpEventName,
 } from '../events/user-signup.event';
 import { UserLoginEvent, UserLoginEventName } from '../events/user-login.event';
+import { UsersService } from '../../users/services/users.service';
 
 @Injectable()
 export class AuthService {

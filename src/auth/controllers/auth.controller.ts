@@ -5,14 +5,16 @@ import {
   HttpCode,
   HttpStatus,
   Post,
-  Req,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
 import { SignUpDto } from '../dto/signup.dto';
 import { LoginDto } from '../dto/login.dto';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
-import { RequestWithUser } from '../types';
+import {
+  CurrentUser,
+  CurrentUserType,
+} from '../../users/decorators/user.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -35,7 +37,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('me')
   @HttpCode(HttpStatus.OK)
-  me(@Req() req: RequestWithUser) {
-    return req.user; // TODO: Return user resource or delete this endpoint
+  me(@CurrentUser() userPayload: CurrentUserType) {
+    return userPayload; // TODO: Return user resource or delete this endpoint
   }
 }
