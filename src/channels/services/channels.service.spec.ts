@@ -2,15 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ChannelsService } from './channels.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Channel, StreamStatus } from '../entities/channel.entity';
-import { Platform } from '../entities/platform.entity';
+import { Platform, PlatformName } from '../entities/platform.entity';
 import { Repository, UpdateResult } from 'typeorm';
 import { CreateChannelDto } from '../dto/create-channel.dto';
-import {
-  HttpException,
-  HttpStatus,
-  UnauthorizedException,
-} from '@nestjs/common';
-import { PageOptionsDto, Order } from '../../shared/paginator/page-options.dto';
+import { HttpException, HttpStatus } from '@nestjs/common';
+import { Order, PageOptionsDto } from '../../shared/paginator/page-options.dto';
 import { UsersService } from '../../users/services/users.service';
 import { User } from '../../users/entities/user.entity';
 import { UpdateChannelDto } from '../dto/update-channel.dto';
@@ -24,7 +20,7 @@ const mockChannel: Channel = {
   endAt: null,
   platform: {
     id: 'platform-id',
-    name: 'Twitch',
+    name: PlatformName.TWITCH,
     url: 'https://twitch.tv',
   },
   user: {
@@ -41,7 +37,7 @@ const mockChannel: Channel = {
 
 const mockPlatform: Platform = {
   id: 'platform-id',
-  name: 'Twitch',
+  name: PlatformName.TWITCH,
   url: 'https://twitch.tv',
 };
 
@@ -56,15 +52,10 @@ const mockUser: User = {
 
 const createChannelDto: CreateChannelDto = {
   name: 'Test Channel',
-  platform: 'Twitch',
+  platform: PlatformName.TWITCH,
   isActive: false,
   startAt: null,
   endAt: null,
-};
-
-const updateChannelDto: UpdateChannelDto = {
-  name: 'Updated Channel',
-  isActive: true,
 };
 
 describe('ChannelsService', () => {

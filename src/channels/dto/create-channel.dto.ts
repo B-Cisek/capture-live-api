@@ -1,10 +1,12 @@
 import {
   IsBoolean,
   IsDateString,
+  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
 } from 'class-validator';
+import { PlatformName } from '../entities/platform.entity';
 
 export class CreateChannelDto {
   @IsNotEmpty()
@@ -12,8 +14,8 @@ export class CreateChannelDto {
   name: string;
 
   @IsNotEmpty()
-  @IsString()
-  platform: string;
+  @IsEnum(PlatformName)
+  platform: PlatformName;
 
   @IsBoolean()
   isActive: boolean;

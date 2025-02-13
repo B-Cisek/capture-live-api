@@ -10,12 +10,14 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ChannelsModule } from './channels/channels.module';
 import { SharedModule } from './shared/shared.module';
 import { StreamRecorderModule } from './stream-recorder/stream-recorder.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot(databaseConfig()),
     EventEmitterModule.forRoot(),
+    ScheduleModule.forRoot(),
     UsersModule,
     AuthModule,
     ChannelsModule,

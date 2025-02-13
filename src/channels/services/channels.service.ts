@@ -77,7 +77,7 @@ export class ChannelsService {
 
   async findOne(id: string, userId: string): Promise<Channel> {
     try {
-      return this.channelRepository.findOneOrFail({
+      return await this.channelRepository.findOneOrFail({
         where: {
           id,
           user: {
@@ -95,7 +95,7 @@ export class ChannelsService {
     userId: string,
     updateChannelDto: UpdateChannelDto,
   ): Promise<UpdateResult> {
-    const channel = this.channelRepository.findOne({
+    const channel = await this.channelRepository.findOne({
       where: { id: id, user: { id: userId } },
     });
 
@@ -103,9 +103,14 @@ export class ChannelsService {
       throw new UnauthorizedException('Not authorized');
     }
 
-    return this.channelRepository.update(
+    const updateChannelDtoPartial = {
+      ...updateChannelDto,
+      platform: updateChannelDto.name,
+    };
+
+    return await this.channelRepository.update(
       id,
-      updateChannelDto as QueryDeepPartialEntity<Channel>,
+      updateChannelDtoPartial as QueryDeepPartialEntity<Channel>,
     );
   }
 

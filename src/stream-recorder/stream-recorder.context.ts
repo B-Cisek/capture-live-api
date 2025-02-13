@@ -1,11 +1,7 @@
 import { StreamRecorder } from './interfaces/stream-recorder.interface';
 
 export class StreamRecorderContext {
-  private recorder: StreamRecorder;
-
-  constructor(recorder: StreamRecorder) {
-    this.recorder = recorder;
-  }
+  constructor(private readonly recorder: StreamRecorder) {}
 
   public startRecording(): void {
     this.recorder.startRecording();
