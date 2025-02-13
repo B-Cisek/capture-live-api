@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ChannelsModule } from './channels/channels.module';
 import { SharedModule } from './shared/shared.module';
+import { StreamRecorderModule } from './stream-recorder/stream-recorder.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { SharedModule } from './shared/shared.module';
     AuthModule,
     ChannelsModule,
     SharedModule,
+    StreamRecorderModule,
   ],
   controllers: [AppController],
 })
