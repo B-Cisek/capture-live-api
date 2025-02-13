@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
@@ -15,6 +16,7 @@ import {
   CurrentUser,
   CurrentUserType,
 } from '../../users/decorators/user.decorator';
+import { Request } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -32,6 +34,13 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async singIn(@Body() loginDto: LoginDto): Promise<{ access_token: string }> {
     return await this.authService.login(loginDto);
+  }
+
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  async logout(@Req() request: Request) {
+    console.log(request.headers);
+    // TODO: Blacklist token
   }
 
   @UseGuards(JwtAuthGuard)

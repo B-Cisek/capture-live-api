@@ -7,7 +7,7 @@ describe('UsersService', () => {
   let service: UsersService;
 
   const mockUserRepository = {
-    findOne: jest.fn(),
+    findOneBy: jest.fn(),
     save: jest.fn(),
   };
 
@@ -27,5 +27,34 @@ describe('UsersService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  it('should return a user by ID', async () => {
+    const user = { id: '1', email: 'test@example.com' } as User;
+    mockUserRepository.findOneBy.mockResolvedValue(user);
+
+    const result = await service.getById('1');
+    expect(result).toEqual(user);
+    expect(mockUserRepository.findOneBy).toHaveBeenCalledWith({ id: '1' });
+  });
+
+  it('should return a user by email', async () => {
+    const user = { id: '1', email: 'test@example.com' } as User;
+    mockUserRepository.findOneBy.mockResolvedValue(user);
+
+    const result = await service.getByEmail('test@example.com');
+    expect(result).toEqual(user);
+    expect(mockUserRepository.findOneBy).toHaveBeenCalledWith({
+      email: 'test@example.com',
+    });
+  });
+
+  it('should create and return a new user', async () => {
+    const user = { id: '1', email: 'test@example.com' } as User;
+    mockUserRepository.save.mockResolvedValue(user);
+
+    const result = await service.create(user);
+    expect(result).toEqual(user);
+    expect(mockUserRepository.save).toHaveBeenCalledWith(user);
   });
 });
