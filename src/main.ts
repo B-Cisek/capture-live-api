@@ -12,6 +12,7 @@ async function bootstrap() {
   app.setGlobalPrefix(configService.get<string>('API_PREFIX', 'api'));
   app.enableCors({
     origin: configService.get<string>('FRONTEND_URL', ''),
+    credentials: true, // only for logout to get refresh token
   });
 
   await app.listen(port, () => {
