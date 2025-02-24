@@ -1,6 +1,6 @@
 import { Entity, Column, OneToMany } from 'typeorm';
 import { AbstractEntity } from '../../shared/abstract.entity';
-import { Channel } from '../../channels/entities/channel.entity';
+import { Channel } from '../../channel/entities/channel.entity';
 import { Exclude } from 'class-transformer';
 
 @Entity()

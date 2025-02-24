@@ -1,8 +1,4 @@
-import {
-  HttpException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { HttpException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateChannelDto } from '../dto/create-channel.dto';
 import { Channel, StreamStatus } from '../entities/channel.entity';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
@@ -13,7 +9,7 @@ import { PageDto } from '../../shared/paginator/page.dto';
 import { PageMetaDto } from '../../shared/paginator/page-meta.dto';
 import { UpdateChannelDto } from '../dto/update-channel.dto';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
-import { UsersService } from '../../users/services/users.service';
+import { UsersService } from '../../user/services/users.service';
 
 @Injectable()
 export class ChannelsService {
@@ -25,10 +21,7 @@ export class ChannelsService {
     private readonly usersService: UsersService,
   ) {}
 
-  async create(
-    userId: string,
-    createChannelDto: CreateChannelDto,
-  ): Promise<Channel> {
+  async create(userId: string, createChannelDto: CreateChannelDto): Promise<Channel> {
     const user = await this.usersService.getById(userId);
 
     if (!user) {
@@ -93,11 +86,7 @@ export class ChannelsService {
     }
   }
 
-  async update(
-    id: string,
-    userId: string,
-    updateChannelDto: UpdateChannelDto,
-  ): Promise<UpdateResult> {
+  async update(id: string, userId: string, updateChannelDto: UpdateChannelDto): Promise<UpdateResult> {
     const channel = await this.channelRepository.findOne({
       where: { id: id, user: { id: userId } },
     });
@@ -109,12 +98,9 @@ export class ChannelsService {
     const updateChannelDtoPartial = {
       ...updateChannelDto,
       platform: updateChannelDto.name,
-    };
+    } as QueryDeepPartialEntity<Channel>;
 
-    return await this.channelRepository.update(
-      id,
-      updateChannelDtoPartial as QueryDeepPartialEntity<Channel>,
-    );
+    return await this.channelRepository.update(id, updateChannelDtoPartial);
   }
 
   async remove(id: string, userId: string): Promise<DeleteResult> {

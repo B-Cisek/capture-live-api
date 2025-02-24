@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { RecordingProcess } from '../entities/RecordingProcess.entity';
-import { PlatformName } from '../../channels/entities/platform.entity';
+import { PlatformName } from '../../channel/entities/platform.entity';
 import { ChannelAlreadyRecordingException } from '../exceptions/channel-already-recording.exception';
 import { CommandBus } from '@nestjs/cqrs';
 import { StreamRecordingStartCommand } from '../commands/stream-recording-start.command';

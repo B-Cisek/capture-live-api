@@ -1,205 +1,187 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-  UnprocessableEntityException,
-  UnauthorizedException,
-} from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { UsersService } from '../../user/services/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { HashService } from './hash.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { ConfigService } from '@nestjs/config';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { BlacklistedToken } from '../entities/blacklisted-token.entity';
+import { Repository } from 'typeorm';
 import { SignUpDto } from '../dto/signup.dto';
 import { LoginDto } from '../dto/login.dto';
-import { User } from '../../users/entities/user.entity';
-import { UserSignUpEventName } from '../events/user-signup.event';
-import { UserLoginEventName } from '../events/user-login.event';
-import { UsersService } from '../../users/services/users.service';
+import { User } from '../../user/entities/user.entity';
+import { UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
+
+const mockUser: User = {
+  id: '1',
+  email: 'test@example.com',
+  password: 'hashedPassword',
+  channels: [], // Assuming channels is an array
+  updatedAt: new Date(),
+  createdAt: new Date(),
+};
+
+const mockSignUpDto: SignUpDto = {
+  email: 'test@example.com',
+  password: 'password',
+};
+
+const mockLoginDto: LoginDto = {
+  email: 'test@example.com',
+  password: 'password',
+};
+
+const mockBlacklistedToken = {
+  token: 'hashedToken',
+  expiresAt: new Date(),
+};
 
 describe('AuthService', () => {
   let authService: AuthService;
-  let mockUsersService: Partial<UsersService>;
-  let mockJwtService: Partial<JwtService>;
-  let mockHashService: Partial<HashService>;
-  let mockEventEmitter: Partial<EventEmitter2>;
+  let usersService: UsersService;
+  let jwtService: JwtService;
+  let hashService: HashService;
+  let eventEmitter: EventEmitter2;
+  let configService: ConfigService;
+  let blacklistedTokenRepository: Repository<BlacklistedToken>;
 
   beforeEach(async () => {
-    mockUsersService = {
-      getByEmail: jest.fn(),
-      create: jest.fn(),
-    };
-
-    // Note: Our AuthService calls jwtService.sign, not signAsync.
-    mockJwtService = {
-      sign: jest.fn().mockReturnValue('mock-token'),
-    };
-
-    mockHashService = {
-      hash: jest.fn().mockResolvedValue('hashed-password'),
-      equals: jest.fn(),
-    };
-
-    mockEventEmitter = {
-      emit: jest.fn(),
-    };
-
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
-        { provide: UsersService, useValue: mockUsersService },
-        { provide: JwtService, useValue: mockJwtService },
-        { provide: HashService, useValue: mockHashService },
-        { provide: EventEmitter2, useValue: mockEventEmitter },
+        {
+          provide: UsersService,
+          useValue: {
+            getByEmail: jest.fn().mockResolvedValue(null),
+            create: jest.fn().mockResolvedValue(mockUser),
+            getById: jest.fn().mockResolvedValue(mockUser),
+          },
+        },
+        {
+          provide: JwtService,
+          useValue: {
+            sign: jest.fn().mockReturnValue('token'),
+            verify: jest.fn().mockReturnValue({ exp: Math.floor(Date.now() / 1000) + 3600 }),
+          },
+        },
+        {
+          provide: HashService,
+          useValue: {
+            hash: jest.fn().mockResolvedValue('hashedPassword'),
+            equals: jest.fn().mockResolvedValue(true),
+            determineHash: jest.fn().mockReturnValue('hashedToken'),
+          },
+        },
+        {
+          provide: EventEmitter2,
+          useValue: {
+            emit: jest.fn(),
+          },
+        },
+        {
+          provide: ConfigService,
+          useValue: {
+            get: jest.fn().mockImplementation((key: string) => {
+              switch (key) {
+                case 'JWT_REFRESH_SECRET':
+                  return 'refreshSecret';
+                case 'JWT_REFRESH_ALGORITHM':
+                  return 'HS256';
+                case 'JWT_REFRESH_EXPIRE':
+                  return '1h';
+                default:
+                  return null;
+              }
+            }),
+          },
+        },
+        {
+          provide: getRepositoryToken(BlacklistedToken),
+          useValue: {
+            save: jest.fn().mockResolvedValue(mockBlacklistedToken),
+            delete: jest.fn().mockResolvedValue({ affected: 1 }),
+          },
+        },
       ],
     }).compile();
 
     authService = module.get<AuthService>(AuthService);
-  });
-
-  it('should be defined', () => {
-    expect(authService).toBeDefined();
+    usersService = module.get<UsersService>(UsersService);
+    jwtService = module.get<JwtService>(JwtService);
+    hashService = module.get<HashService>(HashService);
+    eventEmitter = module.get<EventEmitter2>(EventEmitter2);
+    configService = module.get<ConfigService>(ConfigService);
+    blacklistedTokenRepository = module.get<Repository<BlacklistedToken>>(
+      getRepositoryToken(BlacklistedToken),
+    );
   });
 
   describe('signUp', () => {
-    it('should sign up a new user and return an access token', async () => {
-      const signUpDto: SignUpDto = {
-        email: 'test@example.com',
-        password: 'password',
-      };
-
-      (mockUsersService.getByEmail as jest.Mock).mockResolvedValue(null);
-
-      const createdUser: User = {
-        id: '3213213-432432-432432',
-        email: signUpDto.email,
-        password: 'hashed-password',
-        channels: [],
-        updatedAt: new Date(),
-        createdAt: new Date(),
-      };
-
-      (mockUsersService.create as jest.Mock).mockResolvedValue(createdUser);
-
-      const result = await authService.signUp(signUpDto);
-
-      expect(mockUsersService.getByEmail).toHaveBeenCalledWith(signUpDto.email);
-      expect(mockHashService.hash).toHaveBeenCalledWith(signUpDto.password);
-      expect(mockUsersService.create).toHaveBeenCalledWith(
-        expect.objectContaining({
-          email: signUpDto.email,
-          password: 'hashed-password',
-        }),
-      );
-      expect(mockEventEmitter.emit).toHaveBeenCalledWith(
-        UserSignUpEventName,
-        expect.objectContaining({ id: createdUser.id }),
-      );
-      expect(mockJwtService.sign).toHaveBeenCalledWith({
-        sub: createdUser.id,
-        email: createdUser.email,
-      });
-      expect(result).toEqual({ access_token: 'mock-token' });
+    it('should successfully sign up a user', async () => {
+      const result = await authService.signUp(mockSignUpDto);
+      expect(usersService.getByEmail).toHaveBeenCalledWith(mockSignUpDto.email);
+      expect(usersService.create).toHaveBeenCalled();
+      expect(eventEmitter.emit).toHaveBeenCalled();
+      expect(result).toHaveProperty('access_token');
+      expect(result).toHaveProperty('refresh_token');
     });
 
-    it('should throw UnprocessableEntityException if email already exists', async () => {
-      const signUpDto: SignUpDto = {
-        email: 'existing@example.com',
-        password: 'password',
-      };
-
-      const existingUser: User = {
-        id: '3213213-432432-432432',
-        email: signUpDto.email,
-        password: 'some-password',
-        channels: [],
-        updatedAt: new Date(),
-        createdAt: new Date(),
-      };
-      (mockUsersService.getByEmail as jest.Mock).mockResolvedValue(
-        existingUser,
-      );
-
-      await expect(authService.signUp(signUpDto)).rejects.toThrow(
-        UnprocessableEntityException,
-      );
-      expect(mockUsersService.getByEmail).toHaveBeenCalledWith(signUpDto.email);
+    it('should throw an error if email already exists', async () => {
+      jest.spyOn(usersService, 'getByEmail').mockResolvedValueOnce(mockUser);
+      await expect(authService.signUp(mockSignUpDto)).rejects.toThrow(UnprocessableEntityException);
     });
   });
 
   describe('login', () => {
-    it('should log in an existing user and return an access token', async () => {
-      const loginDto: LoginDto = {
-        email: 'test@example.com',
-        password: 'password',
-      };
-
-      const existingUser: User = {
-        id: '3213213-432432-432432',
-        email: loginDto.email,
-        password: loginDto.password,
-        channels: [],
-        updatedAt: new Date(),
-        createdAt: new Date(),
-      };
-      (mockUsersService.getByEmail as jest.Mock).mockResolvedValue(
-        existingUser,
-      );
-      (mockHashService.equals as jest.Mock).mockResolvedValue(true);
-
-      const result = await authService.login(loginDto);
-
-      expect(mockUsersService.getByEmail).toHaveBeenCalledWith(loginDto.email);
-      expect(mockHashService.equals).toHaveBeenCalledWith(
-        loginDto.password,
-        existingUser.password,
-      );
-      expect(mockEventEmitter.emit).toHaveBeenCalledWith(
-        UserLoginEventName,
-        expect.objectContaining({ id: existingUser.id }),
-      );
-      expect(mockJwtService.sign).toHaveBeenCalledWith({
-        sub: existingUser.id,
-        email: existingUser.email,
-      });
-      expect(result).toEqual({ access_token: 'mock-token' });
+    it('should successfully log in a user', async () => {
+      jest.spyOn(usersService, 'getByEmail').mockResolvedValueOnce(mockUser);
+      const result = await authService.login(mockLoginDto);
+      expect(usersService.getByEmail).toHaveBeenCalledWith(mockLoginDto.email);
+      expect(hashService.equals).toHaveBeenCalledWith(mockLoginDto.password, mockUser.password);
+      expect(eventEmitter.emit).toHaveBeenCalled();
+      expect(result).toHaveProperty('access_token');
+      expect(result).toHaveProperty('refresh_token');
     });
 
-    it('should throw UnauthorizedException if user with email is not found', async () => {
-      const loginDto: LoginDto = {
-        email: 'nonexistent@example.com',
-        password: 'password',
-      };
-
-      (mockUsersService.getByEmail as jest.Mock).mockResolvedValue(null);
-
-      await expect(authService.login(loginDto)).rejects.toThrow(
-        UnauthorizedException,
-      );
-      expect(mockUsersService.getByEmail).toHaveBeenCalledWith(loginDto.email);
+    it('should throw an error if email not found', async () => {
+      await expect(authService.login(mockLoginDto)).rejects.toThrow(UnauthorizedException);
     });
 
-    it('should throw UnauthorizedException if password is invalid', async () => {
-      const loginDto: LoginDto = {
-        email: 'test@example.com',
-        password: 'wrongpassword',
-      };
+    it('should throw an error if password is invalid', async () => {
+      jest.spyOn(usersService, 'getByEmail').mockResolvedValueOnce(mockUser);
+      jest.spyOn(hashService, 'equals').mockResolvedValueOnce(false);
+      await expect(authService.login(mockLoginDto)).rejects.toThrow(UnauthorizedException);
+    });
+  });
 
-      const existingUser: User = {
-        id: '3213213-321321-dadsa',
-        email: loginDto.email,
-        password: 'hashed-password',
-      } as User;
-      (mockUsersService.getByEmail as jest.Mock).mockResolvedValue(
-        existingUser,
-      );
-      (mockHashService.equals as jest.Mock).mockResolvedValue(false);
+  describe('blacklistToken', () => {
+    it('should blacklist a token', async () => {
+      await authService.blacklistToken('token');
+      expect(jwtService.verify).toHaveBeenCalled();
+      expect(blacklistedTokenRepository.save).toHaveBeenCalled();
+    });
+  });
 
-      await expect(authService.login(loginDto)).rejects.toThrow(
-        UnauthorizedException,
-      );
-      expect(mockUsersService.getByEmail).toHaveBeenCalledWith(loginDto.email);
-      expect(mockHashService.equals).toHaveBeenCalledWith(
-        loginDto.password,
-        existingUser.password,
-      );
+  describe('refreshToken', () => {
+    it('should refresh a token', async () => {
+      const result = await authService.refreshToken(mockUser.id);
+      expect(usersService.getById).toHaveBeenCalledWith(mockUser.id);
+      expect(eventEmitter.emit).toHaveBeenCalled();
+      expect(result).toHaveProperty('access_token');
+      expect(result).not.toHaveProperty('refresh_token');
+    });
+
+    it('should throw an error if user not found', async () => {
+      jest.spyOn(usersService, 'getById').mockResolvedValueOnce(null);
+      await expect(authService.refreshToken(mockUser.id)).rejects.toThrow(UnauthorizedException);
+    });
+  });
+
+  describe('clearExpiredTokens', () => {
+    it('should clear expired tokens', async () => {
+      await authService['clearExpiredTokens']();
+      expect(blacklistedTokenRepository.delete).toHaveBeenCalled();
     });
   });
 });

@@ -7,9 +7,10 @@ import { Repository, UpdateResult } from 'typeorm';
 import { CreateChannelDto } from '../dto/create-channel.dto';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { Order, PageOptionsDto } from '../../shared/paginator/page-options.dto';
-import { UsersService } from '../../users/services/users.service';
-import { User } from '../../users/entities/user.entity';
+import { UsersService } from '../../user/services/users.service';
+import { User } from '../../user/entities/user.entity';
 import { UpdateChannelDto } from '../dto/update-channel.dto';
+import { UnauthorizedException } from '@nestjs/common';
 
 const mockChannel: Channel = {
   id: 'channel-id',
@@ -95,12 +96,8 @@ describe('ChannelsService', () => {
     }).compile();
 
     channelsService = module.get<ChannelsService>(ChannelsService);
-    channelRepository = module.get<Repository<Channel>>(
-      getRepositoryToken(Channel),
-    );
-    platformRepository = module.get<Repository<Platform>>(
-      getRepositoryToken(Platform),
-    );
+    channelRepository = module.get<Repository<Channel>>(getRepositoryToken(Channel));
+    platformRepository = module.get<Repository<Platform>>(getRepositoryToken(Platform));
     usersService = module.get<UsersService>(UsersService);
   });
 
@@ -121,17 +118,13 @@ describe('ChannelsService', () => {
 
     it('should throw UnauthorizedException if user is not found', async () => {
       jest.spyOn(usersService, 'getById').mockResolvedValue(null);
-      await expect(
-        channelsService.create('user-id', createChannelDto),
-      ).rejects.toThrowError(HttpException);
+      await expect(channelsService.create('user-id', createChannelDto)).rejects.toThrowError(HttpException);
       expect(usersService.getById).toHaveBeenCalledWith('user-id');
     });
 
     it('should throw HttpException if platform is not found', async () => {
       jest.spyOn(platformRepository, 'findOneBy').mockResolvedValue(null);
-      await expect(
-        channelsService.create('user-id', createChannelDto),
-      ).rejects.toThrowError(HttpException);
+      await expect(channelsService.create('user-id', createChannelDto)).rejects.toThrowError(HttpException);
       expect(platformRepository.findOneBy).toHaveBeenCalledWith({
         name: createChannelDto.platform,
       });
@@ -150,6 +143,9 @@ describe('ChannelsService', () => {
       expect(channelRepository.findAndCount).toHaveBeenCalledWith({
         where: { user: { id: 'user-id' } },
         order: { createdAt: Order.ASC },
+        relations: {
+          platform: true,
+        },
         skip: 0,
         take: 10,
       });
@@ -175,12 +171,8 @@ describe('ChannelsService', () => {
     it('should throw HttpException if channel is not found', async () => {
       jest
         .spyOn(channelRepository, 'findOneOrFail')
-        .mockRejectedValue(
-          new HttpException('Channel not found', HttpStatus.BAD_REQUEST),
-        );
-      await expect(
-        channelsService.findOne('channel-id', 'user-id'),
-      ).rejects.toThrowError(HttpException);
+        .mockRejectedValue(new HttpException('Channel not found', HttpStatus.BAD_REQUEST));
+      await expect(channelsService.findOne('channel-id', 'user-id')).rejects.toThrowError(HttpException);
       expect(channelRepository.findOneOrFail).toHaveBeenCalledWith({
         where: {
           id: 'channel-id',
@@ -193,28 +185,37 @@ describe('ChannelsService', () => {
   });
 
   describe('update', () => {
-    const userId = 'user-1';
-    const channelId = 'channel-1';
-    const updateDto: UpdateChannelDto = { name: 'Updated Name' };
+    it('should update a channel', async () => {
+      const updateChannelDto: UpdateChannelDto = {
+        name: 'Updated Channel',
+        isActive: true,
+        startAt: new Date(),
+        endAt: new Date(),
+      };
 
-    it('should update the channel if authorized', async () => {
-      const mockChannel = new Channel();
-      mockChannel.id = channelId;
-      mockChannel.user = { id: userId } as any;
+      const result = await channelsService.update('channel-id', 'user-id', updateChannelDto);
+      expect(channelRepository.findOne).toHaveBeenCalledWith({
+        where: { id: 'channel-id', user: { id: 'user-id' } },
+      });
+      expect(channelRepository.update).toHaveBeenCalledWith('channel-id', expect.any(Object));
+      expect(result.affected).toEqual(1);
+    });
 
-      jest
-        .spyOn(channelRepository, 'findOne')
-        .mockResolvedValueOnce(mockChannel);
-      jest
-        .spyOn(channelRepository, 'update')
-        .mockResolvedValueOnce({ affected: 1 } as UpdateResult);
+    it('should throw UnauthorizedException if channel is not found', async () => {
+      jest.spyOn(channelRepository, 'findOne').mockResolvedValue(null);
+      const updateChannelDto: UpdateChannelDto = {
+        name: 'Updated Channel',
+        isActive: true,
+        startAt: new Date(),
+        endAt: new Date(),
+      };
 
-      const result = await channelsService.update(channelId, userId, updateDto);
-      expect(result.affected).toBe(1);
-      expect(channelRepository.update).toHaveBeenCalledWith(
-        channelId,
-        updateDto,
+      await expect(channelsService.update('channel-id', 'user-id', updateChannelDto)).rejects.toThrowError(
+        UnauthorizedException,
       );
+      expect(channelRepository.findOne).toHaveBeenCalledWith({
+        where: { id: 'channel-id', user: { id: 'user-id' } },
+      });
     });
   });
 

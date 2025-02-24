@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { ChannelService } from '../channel/channel.service';
-import { PlatformName } from '../../../channels/entities/platform.entity';
+import { PlatformName } from '../../../channel/entities/platform.entity';
 import { StreamRecorderFactory } from '../../factories/stream-recorder.factory';
 
 @Injectable()

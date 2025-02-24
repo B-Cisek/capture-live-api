@@ -1,8 +1,8 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
-import { User } from '../users/entities/user.entity';
-import { Channel } from '../channels/entities/channel.entity';
-import { Platform } from '../channels/entities/platform.entity';
+import { User } from '../user/entities/user.entity';
+import { Channel } from '../channel/entities/channel.entity';
+import { Platform } from '../channel/entities/platform.entity';
 import { BlacklistedToken } from '../auth/entities/blacklisted-token.entity';
 import { RecordingProcess } from '../stream-recorder/entities/RecordingProcess.entity';
 

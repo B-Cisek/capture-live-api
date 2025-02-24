@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PlatformName } from '../../channels/entities/platform.entity';
+import { PlatformName } from '../../channel/entities/platform.entity';
 import { StreamRecorder } from '../interfaces/stream-recorder.interface';
 import { ModuleRef } from '@nestjs/core';
 import { TwitchRecorder } from '../recorders/twitch-recorder';

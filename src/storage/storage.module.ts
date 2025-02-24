@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { StorageService } from './directory.service';
+import { StorageService } from './services/directory.service';
 
 @Module({
   providers: [StorageService],

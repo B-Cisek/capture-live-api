@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
 import { Platform } from './platform.entity';
 import { AbstractEntity } from '../../shared/abstract.entity';
-import { User } from '../../users/entities/user.entity';
+import { User } from '../../user/entities/user.entity';
 
 export enum StreamStatus {
   READY = 'ready',

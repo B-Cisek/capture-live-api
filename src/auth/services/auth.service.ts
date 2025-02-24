@@ -1,26 +1,15 @@
-import {
-  Injectable,
-  LoggerService,
-  UnauthorizedException,
-  UnprocessableEntityException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { HashService } from './hash.service';
 import { SignUpDto } from '../dto/signup.dto';
 import { LoginDto } from '../dto/login.dto';
-import { User } from '../../users/entities/user.entity';
+import { User } from '../../user/entities/user.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import {
-  UserSignUpEvent,
-  UserSignUpEventName,
-} from '../events/user-signup.event';
+import { UserSignUpEvent, UserSignUpEventName } from '../events/user-signup.event';
 import { UserLoginEvent, UserLoginEventName } from '../events/user-login.event';
-import { UsersService } from '../../users/services/users.service';
+import { UsersService } from '../../user/services/users.service';
 import { ConfigService } from '@nestjs/config';
-import {
-  RefreshTokenEvent,
-  RefreshTokenEventName,
-} from '../events/refresh-token.event';
+import { RefreshTokenEvent, RefreshTokenEventName } from '../events/refresh-token.event';
 import { BlacklistedToken } from '../entities/blacklisted-token.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LessThan, Repository } from 'typeorm';
@@ -56,10 +45,7 @@ export class AuthService {
 
     const newUser = await this.usersService.create(entity);
 
-    this.eventEmitter.emit(
-      UserSignUpEventName,
-      new UserSignUpEvent(newUser.id),
-    );
+    this.eventEmitter.emit(UserSignUpEventName, new UserSignUpEvent(newUser.id));
 
     return this.createAuthResponse(newUser, true);
   }
@@ -71,10 +57,7 @@ export class AuthService {
       throw new UnauthorizedException('Account with this email not found');
     }
 
-    const isPasswordValid = await this.hashService.equals(
-      loginDto.password,
-      user.password,
-    );
+    const isPasswordValid = await this.hashService.equals(loginDto.password, user.password);
 
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
@@ -104,18 +87,12 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    this.eventEmitter.emit(
-      RefreshTokenEventName,
-      new RefreshTokenEvent(user.id),
-    );
+    this.eventEmitter.emit(RefreshTokenEventName, new RefreshTokenEvent(user.id));
 
     return this.createAuthResponse(user);
   }
 
-  private createAuthResponse(
-    user: User,
-    withRefreshToken = false,
-  ): Partial<AuthResponse> {
+  private createAuthResponse(user: User, withRefreshToken = false): Partial<AuthResponse> {
     const response: Partial<AuthResponse> = {
       access_token: this.createAccessToken(user),
     };
@@ -148,10 +125,8 @@ export class AuthService {
   private async clearExpiredTokens(): Promise<void> {
     const date = new Date();
 
-    const result = await this.blacklistedTokenRepository.delete({
+    await this.blacklistedTokenRepository.delete({
       expiresAt: LessThan(date),
     });
-
-    console.log(result);
   }
 }

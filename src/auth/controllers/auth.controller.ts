@@ -1,21 +1,9 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Post,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthResponse, AuthService } from '../services/auth.service';
 import { SignUpDto } from '../dto/signup.dto';
 import { LoginDto } from '../dto/login.dto';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
-import {
-  CurrentUser,
-  CurrentUserType,
-} from '../../users/decorators/user.decorator';
+import { CurrentUser, CurrentUserType } from '../../user/decorators/user.decorator';
 import { Request } from 'express';
 import { RefreshAuthGuard } from '../guards/refresh-auth.guard';
 
