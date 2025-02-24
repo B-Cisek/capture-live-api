@@ -5,13 +5,11 @@ export type CurrentUserType = {
   email: string;
 };
 
-export const CurrentUser = createParamDecorator(
-  (data: unknown, ctx: ExecutionContext): CurrentUserType => {
-    const request = ctx.switchToHttp().getRequest();
+export const CurrentUser = createParamDecorator((data: unknown, ctx: ExecutionContext): CurrentUserType => {
+  const request = ctx.switchToHttp().getRequest();
 
-    return {
-      id: request.user.id,
-      email: request.user.email,
-    };
-  },
-);
+  return {
+    id: request.user.id,
+    email: request.user.email,
+  };
+});

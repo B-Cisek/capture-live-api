@@ -63,6 +63,9 @@ export class ChannelsService {
     const [data, total] = await this.channelRepository.findAndCount({
       where: { user: { id: userId } },
       order: { createdAt: sortOrder },
+      relations: {
+        platform: true,
+      },
       skip,
       take: take,
     });

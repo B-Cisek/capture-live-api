@@ -28,7 +28,7 @@ export class Channel extends AbstractEntity {
   @Column({ nullable: true })
   endAt: Date;
 
-  @OneToOne(() => Platform)
+  @ManyToOne(() => Platform)
   @JoinColumn()
   platform: Platform;
 

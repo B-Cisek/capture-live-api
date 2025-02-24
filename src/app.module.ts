@@ -11,6 +11,9 @@ import { ChannelsModule } from './channels/channels.module';
 import { SharedModule } from './shared/shared.module';
 import { StreamRecorderModule } from './stream-recorder/stream-recorder.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { StorageModule } from './storage/storage.module';
+import { TwitchRecorder } from './stream-recorder/recorders/twitch-recorder';
+import { CqrsModule } from '@nestjs/cqrs';
 
 @Module({
   imports: [
@@ -18,12 +21,15 @@ import { ScheduleModule } from '@nestjs/schedule';
     TypeOrmModule.forRoot(databaseConfig()),
     EventEmitterModule.forRoot(),
     ScheduleModule.forRoot(),
+    CqrsModule.forRoot(),
     UsersModule,
     AuthModule,
     ChannelsModule,
     SharedModule,
     StreamRecorderModule,
+    StorageModule,
   ],
+  providers: [TwitchRecorder],
   controllers: [AppController],
 })
 export class AppModule {
